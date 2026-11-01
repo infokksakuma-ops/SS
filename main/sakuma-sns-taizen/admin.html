@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>管理者ダッシュボード | SAKUMASCHOOL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream: #FFF8EC;
+    --pink: #FF3D6E;
+    --pink-deep: #E0235E;
+    --teal: #00D9C0;
+    --ink: #1A1A2E;
+    --yellow: #FFC93C;
+    --card: #FFFFFF;
+    --line: #F0E6D6;
+    --shadow: 0 8px 24px rgba(26,26,46,0.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Noto Sans JP', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.brand{font-family:'Zen Maru Gothic', sans-serif;}
+  a{color:inherit;text-decoration:none;}
+
+  /* ---------- login gate (admin) ---------- */
+  .login-overlay{
+    position:fixed; inset:0; z-index:200;
+    background:linear-gradient(135deg, #1A1A2E 0%, #2A1A3E 100%);
+    display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  .login-card{
+    position:relative; z-index:1;
+    background:#fff; border-radius:24px; padding:44px 38px;
+    width:100%; max-width:380px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.35); text-align:center;
+  }
+  .login-card .login-brand{
+    display:inline-flex; align-items:center; gap:8px;
+    font-weight:900; font-size:1rem; margin-bottom:22px; color:var(--ink);
+  }
+  .login-card .dot{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--teal));}
+  .login-card h2{font-size:1.3rem; font-weight:900; margin:0 0 8px;}
+  .login-card p.lc-sub{font-size:0.84rem; color:#6b6b80; line-height:1.7; margin:0 0 26px;}
+  .login-input{
+    width:100%; padding:14px 16px; border-radius:14px;
+    border:1.5px solid var(--line); font-size:0.9rem; margin-bottom:14px;
+    outline:none; transition:border-color .15s ease; font-family:'Noto Sans JP',sans-serif;
+  }
+  .login-input:focus{border-color:var(--pink);}
+  .login-btn{
+    width:100%; padding:14px; border-radius:14px; border:none;
+    background:linear-gradient(135deg,var(--pink),var(--pink-deep)); color:#fff;
+    font-weight:700; font-size:0.92rem; cursor:pointer; font-family:'Zen Maru Gothic',sans-serif;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .login-btn:hover{transform:translateY(-2px); box-shadow:0 8px 20px rgba(255,61,110,0.35);}
+  .login-status{margin-top:16px; font-size:0.8rem; color:#00867A; min-height:18px;}
+  .lc-note{margin-top:24px; font-size:0.72rem; color:#9999a8; line-height:1.6;}
+
+  .app.locked{filter:blur(2px); pointer-events:none; user-select:none;}
+
+
+
+  /* ---------- shell ---------- */
+  .app{max-width:1100px; margin:0 auto; padding:36px 28px 80px;}
+
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:32px; flex-wrap:wrap; gap:14px;
+  }
+  .topbar .brand{display:flex; align-items:center; gap:10px; font-weight:900; font-size:1.05rem;}
+  .topbar .brand .dot{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--teal));}
+  .topbar .brand small{display:block; font-weight:400; font-size:0.66rem; color:#9999b3;}
+  .topbar-right{display:flex; align-items:center; gap:12px;}
+  .admin-pill{
+    background:#1A1A2E; color:#fff; font-size:0.7rem; font-weight:700;
+    padding:5px 14px; border-radius:99px;
+  }
+  .logout-btn{
+    background:#fff; border:1px solid var(--line); border-radius:99px;
+    padding:7px 16px; font-size:0.76rem; cursor:pointer; font-family:'Noto Sans JP',sans-serif;
+  }
+  .logout-btn:hover{border-color:var(--pink);}
+
+  /* ---------- summary stats ---------- */
+  .stat-row{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:14px; margin-bottom:30px;
+  }
+  .stat-card{
+    background:#fff; border:1px solid var(--line); border-radius:18px;
+    padding:20px 22px; box-shadow:var(--shadow);
+  }
+  .stat-card .sv{font-weight:900; font-size:1.7rem; font-family:'Zen Maru Gothic',sans-serif;
+    background:linear-gradient(135deg,var(--pink),var(--teal)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .stat-card .sl{font-size:0.76rem; color:#6b6b80; margin-top:4px;}
+
+  /* ---------- controls ---------- */
+  .controls{
+    display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap; align-items:center;
+  }
+  .search-input{
+    flex:1; min-width:200px; padding:11px 16px; border-radius:12px;
+    border:1.5px solid var(--line); font-size:0.86rem; outline:none;
+    font-family:'Noto Sans JP',sans-serif;
+  }
+  .search-input:focus{border-color:var(--pink);}
+  .sort-select{
+    padding:11px 14px; border-radius:12px; border:1.5px solid var(--line);
+    font-size:0.84rem; background:#fff; font-family:'Noto Sans JP',sans-serif; cursor:pointer;
+  }
+
+  /* ---------- roster table ---------- */
+  .roster{
+    background:#fff; border:1px solid var(--line); border-radius:18px;
+    overflow:hidden; box-shadow:var(--shadow);
+  }
+  .roster-row{
+    display:grid;
+    grid-template-columns: 1fr 140px 100px 100px 110px 110px 28px;
+    align-items:center;
+    gap:12px;
+    padding:14px 22px;
+    border-bottom:1px solid var(--line);
+    cursor:pointer;
+    transition:background .12s ease;
+  }
+  .roster-row:last-child{border-bottom:none;}
+  .roster-row:hover{background:#FFFBF3;}
+  .roster-row.head{
+    background:#FFF1F4; cursor:default; font-size:0.72rem; font-weight:700; color:var(--pink-deep);
+  }
+  .roster-row.head:hover{background:#FFF1F4;}
+  .r-email{font-size:0.88rem; font-weight:500; overflow:hidden; text-overflow:ellipsis;}
+  .r-bar-wrap{display:flex; align-items:center; gap:8px;}
+  .r-bar-track{flex:1; height:10px; border-radius:99px; background:#F0E6D6; overflow:hidden;}
+  .r-bar-fill{height:100%; border-radius:99px; background:linear-gradient(90deg,var(--pink),var(--teal)); transition:width .3s ease;}
+  .r-pct{font-size:0.8rem; font-weight:700; color:var(--ink); width:38px; text-align:right; flex-shrink:0;}
+  .r-count{font-size:0.78rem; color:#6b6b80; text-align:center;}
+  .r-visited{font-size:0.78rem; color:#00867A; text-align:center;}
+  .r-active{font-size:0.78rem; color:#6b6b80; text-align:center;}
+  .r-joined{font-size:0.78rem; color:#6b6b80; text-align:center;}
+  .r-chevron{font-size:0.8rem; color:#9999a8; text-align:center; transition:transform .15s ease;}
+  .roster-row.open .r-chevron{transform:rotate(90deg);}
+
+  .status-dot{display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px;}
+  .status-dot.active{background:var(--teal);}
+  .status-dot.stale{background:var(--yellow);}
+  .status-dot.inactive{background:#ccc;}
+
+  /* ---------- detail panel ---------- */
+  .detail-panel{
+    display:none;
+    grid-column:1 / -1;
+    background:#FFFBF3;
+    border-top:1px dashed var(--line);
+    padding:18px 22px 24px;
+  }
+  .detail-panel.open{display:block;}
+  .detail-row{padding:16px 22px 0;}
+  .detail-grid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px; margin-top:6px;
+  }
+  .detail-section h4{
+    font-size:0.78rem; font-weight:700; color:var(--pink-deep); margin:0 0 10px;
+    text-transform:uppercase; letter-spacing:0.04em;
+  }
+  .detail-list{display:flex; flex-direction:column; gap:6px;}
+  .detail-item{
+    display:flex; align-items:center; gap:8px;
+    font-size:0.82rem; padding:7px 10px; border-radius:10px; background:#fff; border:1px solid var(--line);
+  }
+  .detail-item .di-mark{
+    width:18px; height:18px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:0.62rem; color:#fff;
+  }
+  .detail-item .di-mark.yes{background:linear-gradient(135deg,var(--teal),#00A693);}
+  .detail-item .di-mark.no{background:#e3e3e3; color:#999;}
+  .detail-item.done-false{color:#aaa;}
+
+  footer.page-footer{
+    margin-top:40px; padding-top:20px; border-top:1px solid var(--line);
+    font-size:0.74rem; color:#9999a8;
+  }
+
+  @media (max-width:720px){
+    .roster-row{grid-template-columns: 1fr 100px 28px;}
+    .r-count, .r-visited, .r-active, .r-joined{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ ADMIN LOGIN OVERLAY ============ -->
+<div class="login-overlay" id="loginOverlay">
+
+  <!-- 通常ログイン -->
+  <div class="login-card" id="cardLogin">
+    <div class="login-brand"><span class="dot"></span>SAKUMASCHOOL</div>
+    <h2>管理者ログイン</h2>
+    <p class="lc-sub">管理者メールアドレスとパスワードでログインしてください。</p>
+    <input class="login-input" type="email" id="loginEmail" placeholder="管理者メールアドレス" autocomplete="email">
+    <input class="login-input" type="password" id="loginPassword" placeholder="パスワード" autocomplete="current-password">
+    <button class="login-btn" id="loginBtn">ログイン</button>
+    <div class="login-status" id="loginStatus"></div>
+    <p class="lc-note">このページは生徒には共有しないでください。管理者権限を持つアカウントのみアクセスできます。</p>
+  </div>
+
+  <!-- パスワード再設定（リセットメールのリンクから来た時のみ表示） -->
+  <div class="login-card" id="cardReset" style="display:none;">
+    <div class="login-brand"><span class="dot"></span>SAKUMASCHOOL</div>
+    <h2>新しいパスワードを設定</h2>
+    <p class="lc-sub">新しいパスワードを入力してください（8文字以上）。</p>
+    <input class="login-input" type="password" id="newPassword" placeholder="新しいパスワード" autocomplete="new-password">
+    <input class="login-input" type="password" id="newPasswordConfirm" placeholder="新しいパスワード（確認）" autocomplete="new-password">
+    <button class="login-btn" id="updatePasswordBtn">パスワードを更新する</button>
+    <div class="login-status" id="resetStatus"></div>
+  </div>
+
+</div>
+
+
+
+<div class="app locked" id="appRoot">
+
+  <div class="topbar">
+    <div class="brand"><span class="dot"></span>SAKUMASCHOOL<br><small>生徒進捗ダッシュボード</small></div>
+    <div class="topbar-right">
+      <span class="admin-pill">ADMIN</span>
+      <button class="logout-btn" id="logoutBtn">ログアウト</button>
+    </div>
+  </div>
+
+  <div class="stat-row" id="statRow"></div>
+
+  <div class="controls">
+    <input class="search-input" id="searchInput" placeholder="メールアドレスで検索...">
+    <select class="sort-select" id="sortSelect">
+      <option value="pct-desc">進捗が高い順</option>
+      <option value="pct-asc">進捗が低い順</option>
+      <option value="active-desc">最近アクティブな順</option>
+      <option value="email-asc">メールアドレス順</option>
+    </select>
+  </div>
+
+  <div class="roster" id="roster">
+    <div class="roster-row head">
+      <div>生徒</div><div>進捗</div><div style="text-align:center;">完了数</div><div style="text-align:center;">訪問済</div><div style="text-align:center;">登録日</div><div style="text-align:center;">最終ログイン</div><div></div>
+    </div>
+    <!-- roster rows injected by JS -->
+  </div>
+
+  <footer class="page-footer">このページは管理者専用です。本番接続後、生徒データはSupabaseの progress / auth.users テーブルから取得します。</footer>
+</div>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+  /* ============================================================
+     SUPABASE 接続
+  ============================================================ */
+  const SUPABASE_URL  = 'https://xxlgpzjevsyklqvvwyro.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4bGdwempldnN5a2xxdnZ3eXJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MzAwOTksImV4cCI6MjEwMjAwNjA5OX0.P6iWSWfoEjTdGQVMOA7BsmuqJNZkfRmz0HM_n_Rrxrw';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  /* ============================================================
+     AUTH（管理者パスワードログイン）
+  ============================================================ */
+  const loginOverlay      = document.getElementById('loginOverlay');
+  const cardLogin         = document.getElementById('cardLogin');
+  const cardReset         = document.getElementById('cardReset');
+  const appRoot           = document.getElementById('appRoot');
+  const loginBtn          = document.getElementById('loginBtn');
+  const loginEmailInput   = document.getElementById('loginEmail');
+  const loginPassword     = document.getElementById('loginPassword');
+  const loginStatus       = document.getElementById('loginStatus');
+  const logoutBtn         = document.getElementById('logoutBtn');
+  const updatePasswordBtn = document.getElementById('updatePasswordBtn');
+  const newPassword       = document.getElementById('newPassword');
+  const newPasswordConfirm= document.getElementById('newPasswordConfirm');
+  const resetStatus       = document.getElementById('resetStatus');
+
+  let currentAdminUser = null;
+
+  function showCard(id){
+    cardLogin.style.display = id === 'cardLogin' ? 'block' : 'none';
+    cardReset.style.display = id === 'cardReset' ? 'block' : 'none';
+  }
+
+  function isAdmin(user){
+    return user?.email === 'info.kksakuma@gmail.com'
+      && user?.user_metadata?.role === 'admin';
+  }
+
+  async function setLoggedIn(user){
+    if(!isAdmin(user)){
+      await supabase.auth.signOut();
+      loginStatus.style.color = '#E0235E';
+      loginStatus.textContent = 'このアカウントには管理者権限がありません。';
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'ログイン';
+      return;
+    }
+    currentAdminUser = user;
+    loginOverlay.style.display = 'none';
+    appRoot.classList.remove('locked');
+    loadAndRenderDashboard();
+  }
+
+  function setLoggedOut(){
+    currentAdminUser = null;
+    loginOverlay.style.display = 'flex';
+    showCard('cardLogin');
+    appRoot.classList.add('locked');
+  }
+
+  /* -- 通常ログイン -- */
+  loginBtn.addEventListener('click', async () => {
+    const email = loginEmailInput.value.trim();
+    const pass  = loginPassword.value;
+    if(!email || !pass){
+      loginStatus.style.color = '#E0235E';
+      loginStatus.textContent = 'メールアドレスとパスワードを入力してください';
+      return;
+    }
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'ログイン中...';
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+    if(error){
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'ログイン';
+      loginStatus.style.color = '#E0235E';
+      loginStatus.textContent = 'メールアドレスまたはパスワードが違います';
+      return;
+    }
+    await setLoggedIn(data.user);
+  });
+
+  [loginEmailInput, loginPassword].forEach(el => {
+    el.addEventListener('keydown', e => { if(e.key === 'Enter') loginBtn.click(); });
+  });
+
+  /* -- パスワード更新（リセットメールから来た時） -- */
+  updatePasswordBtn.addEventListener('click', async () => {
+    const pass  = newPassword.value;
+    const pass2 = newPasswordConfirm.value;
+    if(!pass || pass.length < 8){
+      resetStatus.style.color = '#E0235E';
+      resetStatus.textContent = 'パスワードは8文字以上にしてください';
+      return;
+    }
+    if(pass !== pass2){
+      resetStatus.style.color = '#E0235E';
+      resetStatus.textContent = 'パスワードが一致しません';
+      return;
+    }
+    updatePasswordBtn.disabled = true;
+    updatePasswordBtn.textContent = '更新中...';
+    const { error } = await supabase.auth.updateUser({ password: pass });
+    if(error){
+      resetStatus.style.color = '#E0235E';
+      resetStatus.textContent = 'エラー：' + error.message;
+      updatePasswordBtn.disabled = false;
+      updatePasswordBtn.textContent = 'パスワードを更新する';
+      return;
+    }
+    resetStatus.style.color = '#00867A';
+    resetStatus.textContent = 'パスワードを更新しました！ログインしてください。';
+    setTimeout(() => {
+      showCard('cardLogin');
+      loginOverlay.style.display = 'flex';
+    }, 2000);
+  });
+
+  /* -- ログアウト -- */
+  logoutBtn.addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    setLoggedOut();
+  });
+
+  /* -- 初期セッション確認 & recoveryモード検知 -- */
+  const { data: { session } } = await supabase.auth.getSession();
+  if(session?.user) await setLoggedIn(session.user);
+  else setLoggedOut();
+
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    if(event === 'PASSWORD_RECOVERY'){
+      // パスワードリセットメールのリンクから来た場合
+      loginOverlay.style.display = 'flex';
+      appRoot.classList.add('locked');
+      showCard('cardReset');
+      newPassword.focus();
+    } else if(session?.user){
+      await setLoggedIn(session.user);
+    } else {
+      setLoggedOut();
+    }
+  });
+
+  /* ============================================================
+     DATA LOADING（Supabase本番接続）
+     progress テーブルから全ユーザーのデータを取得し、
+     auth.users のメールと突き合わせて生徒一覧を組み立てる
+  ============================================================ */
+  let STUDENTS = [];
+  let openEmail = null;
+
+  async function fetchStudents(){
+    // ① progressレコードを全件取得
+    const { data: rows, error } = await supabase
+      .from('progress')
+      .select('user_id, item_id, item_type, completed, title, updated_at');
+    if(error){ console.error(error); return []; }
+    if(!rows || rows.length === 0) return [];
+
+    // ② profilesテーブルから名前・メール・ログイン日・登録日を取得
+    const userIds = [...new Set(rows.map(r => r.user_id))];
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('user_id, nickname, email, last_login_at, joined_at')
+      .in('user_id', userIds);
+    const profileMap = {};
+    (profiles || []).forEach(p => { profileMap[p.user_id] = p; });
+
+    // ③ user_idごとにグループ化
+    const byUser = {};
+    rows.forEach(row => {
+      if(!byUser[row.user_id]) byUser[row.user_id] = [];
+      byUser[row.user_id].push(row);
+    });
+
+    // ④ 各ユーザーの集計
+    const students = Object.entries(byUser).map(([userId, items]) => {
+      const steps = items.filter(i => i.item_type === 'step');
+      const links = items.filter(i => i.item_type === 'link');
+      const completedSteps = steps.filter(i => i.completed);
+      const lastActive = items.reduce((latest, i) => {
+        const d = new Date(i.updated_at);
+        return d > latest ? d : latest;
+      }, new Date(0));
+      const profile = profileMap[userId] || {};
+
+      return {
+        user_id: userId,
+        nickname: profile.nickname || null,
+        email: profile.email || userId,
+        display: profile.nickname
+          ? profile.nickname + '（' + (profile.email || '') + '）'
+          : (profile.email || userId),
+        total_steps: steps.length,
+        completed_steps: completedSteps.length,
+        total_links: links.length,
+        visited_links: links.filter(i => i.completed).length,
+        last_active: lastActive,
+        last_login_at: profile.last_login_at ? new Date(profile.last_login_at) : null,
+        joined_at: profile.joined_at ? new Date(profile.joined_at) : null,
+        items: items.map(i => ({
+          id: i.item_id,
+          title: i.title || i.item_id,
+          type: i.item_type,
+          done: i.completed
+        }))
+      };
+    });
+
+    return students;
+  }
+
+  /* ============================================================
+     RENDER
+  ============================================================ */
+  function fmtDate(d){
+    if(!(d instanceof Date) || isNaN(d)) return '—';
+    return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();
+  }
+  function daysAgo(d){
+    return Math.floor((new Date() - d) / (1000*60*60*24));
+  }
+  function statusFor(s){
+    const d = s.last_login_at || s.last_active;
+    if(!d) return 'inactive';
+    const days = Math.floor((new Date() - d) / (1000*60*60*24));
+    if(days <= 3) return 'active';
+    if(days <= 10) return 'stale';
+    return 'inactive';
+  }
+
+  function renderStats(){
+    const total = STUDENTS.length;
+    const avgPct = total ? Math.round(
+      STUDENTS.reduce((sum,s) => {
+        const t = s.total_steps || 1;
+        return sum + (s.completed_steps / t);
+      }, 0) / total * 100
+    ) : 0;
+    const activeCount = STUDENTS.filter(s => statusFor(s.last_active) === 'active').length;
+    const completedAll = STUDENTS.filter(s => s.total_steps > 0 && s.completed_steps === s.total_steps).length;
+
+    document.getElementById('statRow').innerHTML = `
+      <div class="stat-card"><div class="sv">${total}</div><div class="sl">登録生徒数</div></div>
+      <div class="stat-card"><div class="sv">${avgPct}%</div><div class="sl">平均進捗率</div></div>
+      <div class="stat-card"><div class="sv">${activeCount}</div><div class="sl">直近3日以内に活動</div></div>
+      <div class="stat-card"><div class="sv">${completedAll}</div><div class="sl">全ステップ完了</div></div>
+    `;
+  }
+
+  function renderRoster(){
+    const roster = document.getElementById('roster');
+    const query  = document.getElementById('searchInput').value.trim().toLowerCase();
+    const sortBy = document.getElementById('sortSelect').value;
+
+    let list = STUDENTS.filter(s => s.display.toLowerCase().includes(query));
+    list.sort((a,b) => {
+      const pa = (a.completed_steps||0)/(a.total_steps||1);
+      const pb = (b.completed_steps||0)/(b.total_steps||1);
+      if(sortBy === 'pct-desc') return pb - pa;
+      if(sortBy === 'pct-asc')  return pa - pb;
+      if(sortBy === 'active-desc') return a.last_active < b.last_active ? 1 : -1;
+      if(sortBy === 'email-asc')   return a.email.localeCompare(b.email);
+      return 0;
+    });
+
+    roster.querySelectorAll('.roster-row:not(.head), .detail-panel').forEach(el => el.remove());
+
+    if(list.length === 0){
+      const empty = document.createElement('div');
+      empty.className = 'roster-row';
+      empty.style.cursor = 'default';
+      empty.innerHTML = '<div style="color:#9999a8; grid-column:1/-1;">該当する生徒が見つかりません。生徒がまだログインしていない可能性があります。</div>';
+      roster.appendChild(empty);
+      return;
+    }
+
+    list.forEach(s => {
+      const pct    = Math.round((s.completed_steps / (s.total_steps || 1)) * 100);
+      const status = statusFor(s);
+      const row    = document.createElement('div');
+      row.className = 'roster-row' + (openEmail === s.user_id ? ' open' : '');
+      row.innerHTML = `
+        <div class="r-email"><span class="status-dot ${status}"></span>${s.display}</div>
+        <div class="r-bar-wrap">
+          <div class="r-bar-track"><div class="r-bar-fill" style="width:${pct}%"></div></div>
+          <div class="r-pct">${pct}%</div>
+        </div>
+        <div class="r-count">${s.completed_steps}/${s.total_steps}</div>
+        <div class="r-visited">${s.visited_links}/${s.total_links}</div>
+        <div class="r-joined">${s.joined_at ? fmtDate(s.joined_at) : '—'}</div>
+        <div class="r-active">${s.last_login_at ? fmtDate(s.last_login_at) : '—'}</div>
+        <div class="r-chevron">▶</div>
+      `;
+      row.addEventListener('click', () => {
+        openEmail = (openEmail === s.user_id) ? null : s.user_id;
+        renderRoster();
+      });
+      roster.appendChild(row);
+
+      if(openEmail === s.user_id){
+        const panel = document.createElement('div');
+        panel.className = 'detail-panel open';
+        const steps = s.items.filter(it => it.type === 'step');
+        const links = s.items.filter(it => it.type === 'link');
+        panel.innerHTML = `
+          <div class="detail-grid">
+            <div class="detail-section">
+              <h4>ステップ完了状況 (${steps.filter(i=>i.done).length}/${steps.length})</h4>
+              <div class="detail-list">
+                ${steps.map(it => `
+                  <div class="detail-item ${it.done?'':'done-false'}">
+                    <span class="di-mark ${it.done?'yes':'no'}">${it.done?'✓':'–'}</span>
+                    ${it.title || it.id}
+                  </div>`).join('')}
+              </div>
+            </div>
+            <div class="detail-section">
+              <h4>リンク訪問状況 (${links.filter(i=>i.done).length}/${links.length})</h4>
+              <div class="detail-list">
+                ${links.map(it => `
+                  <div class="detail-item ${it.done?'':'done-false'}">
+                    <span class="di-mark ${it.done?'yes':'no'}">${it.done?'✓':'–'}</span>
+                    ${it.title || it.id}
+                  </div>`).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+        roster.appendChild(panel);
+      }
+    });
+  }
+
+  async function loadAndRenderDashboard(){
+    document.getElementById('statRow').innerHTML = '<div style="color:#9999a8; font-size:0.84rem; padding:8px;">読み込み中...</div>';
+    STUDENTS = await fetchStudents();
+    renderStats();
+    renderRoster();
+  }
+
+  document.getElementById('searchInput').addEventListener('input', renderRoster);
+  document.getElementById('sortSelect').addEventListener('change', renderRoster);
+
+  /* ============================================================
+     DUMMY DATA（DEVモード用）
+  ============================================================ */
+  function genDummyStudents(n){
+    const stepTitles = [
+      'オーダーメイド設定を提出','週間目標シートを記入','タイムコーディネーション提出',
+      'ファーストZoom質問シート提出','必要物資を購入','撮影・編集','動画初回投稿',
+      'リサーチ→台本→投稿サイクル','講師ミーティング','商品設計の完了',
+      '決済フォーム申請','公式LINE開設','リッチメニュー設定','相談会実施','ステップ配信導入'
+    ];
+    const linkTitles = [
+      'マインド研修動画','よくある質問/ポリシー','リサーチ方法解説','台本の作り方',
+      'CapCut編集講座','撮影方法講座','Stripe申請ガイド','LINE公式アカウント作成手順'
+    ];
+    const out = [];
+    for(let i=1;i<=n;i++){
+      const sc = Math.floor(Math.random()*stepTitles.length);
+      const lc = Math.floor(Math.random()*linkTitles.length);
+      const lastActive = new Date();
+      lastActive.setDate(lastActive.getDate() - Math.floor(Math.random()*21));
+      const items = [
+        ...stepTitles.map((t,idx) => ({ id:'step-'+idx, title:t, type:'step', done:idx<sc })),
+        ...linkTitles.map((t,idx) => ({ id:'link-'+idx, title:t, type:'link', done:idx<lc }))
+      ];
+      out.push({
+        email:'student'+String(i).padStart(3,'0')+'@example.com',
+        total_steps:stepTitles.length, completed_steps:sc,
+        total_links:linkTitles.length, visited_links:lc,
+        last_active:lastActive, items
+      });
+    }
+    return out;
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,1981 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAKUMASCHOOL | TikTok大全</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream: #FFF8EC;
+    --pink: #FF3D6E;
+    --pink-deep: #E0235E;
+    --teal: #00D9C0;
+    --ink: #1A1A2E;
+    --yellow: #FFC93C;
+    --card: #FFFFFF;
+    --line: #F0E6D6;
+    --shadow: 0 8px 24px rgba(26,26,46,0.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Noto Sans JP', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.brand,.navlabel,.eyebrow{
+    font-family:'Zen Maru Gothic', sans-serif;
+  }
+  a{color:inherit;text-decoration:none;}
+  ul{margin:0;padding:0;list-style:none;}
+
+  /* ---------- layout shell ---------- */
+  .app{
+    display:flex;
+    min-height:100vh;
+  }
+
+  /* ---------- sidebar ---------- */
+  .sidebar{
+    width:280px;
+    flex-shrink:0;
+    background:var(--ink);
+    color:#fff;
+    padding:28px 20px 28px;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:24px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:900;
+    font-size:1.05rem;
+    padding:0 6px;
+  }
+  .brand .dot{
+    width:14px;height:14px;border-radius:50%;
+    background:linear-gradient(135deg,var(--pink),var(--teal));
+    flex-shrink:0;
+  }
+  .brand small{
+    display:block;
+    font-family:'Noto Sans JP',sans-serif;
+    font-weight:400;
+    font-size:0.65rem;
+    color:#9999b3;
+    letter-spacing:0.05em;
+  }
+
+  .progress-rail{
+    margin:0 6px;
+    padding:14px;
+    background:rgba(255,255,255,0.05);
+    border-radius:14px;
+  }
+  .progress-rail .pr-label{
+    font-size:0.68rem;
+    color:#9999b3;
+    margin-bottom:8px;
+    letter-spacing:0.05em;
+  }
+  .progress-track{
+    position:relative;
+    height:8px;
+    border-radius:99px;
+    background:rgba(255,255,255,0.12);
+    overflow:hidden;
+  }
+  .progress-fill{
+    position:absolute;
+    inset:0;
+    width:var(--pct,16%);
+    background:linear-gradient(90deg,var(--pink),var(--teal));
+    border-radius:99px;
+    transition:width .4s ease;
+  }
+  .progress-pct{
+    margin-top:8px;
+    font-size:0.72rem;
+    color:#cfcfe0;
+  }
+
+  nav.menu{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    flex:1;
+  }
+  .navgroup-title{
+    font-size:0.68rem;
+    color:#7a7a96;
+    padding:14px 10px 4px;
+    letter-spacing:0.08em;
+  }
+  .navitem{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:12px;
+    font-size:0.86rem;
+    font-weight:500;
+    color:#d7d7e6;
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  .navitem .num{
+    font-family:'Zen Maru Gothic',sans-serif;
+    font-weight:900;
+    font-size:0.72rem;
+    width:22px;height:22px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(255,255,255,0.08);
+    color:#9999b3;
+    flex-shrink:0;
+  }
+  .navitem:hover{
+    background:rgba(255,255,255,0.06);
+    color:#fff;
+  }
+  .navitem.active{
+    background:linear-gradient(135deg, rgba(255,61,110,0.18), rgba(0,217,192,0.12));
+    color:#fff;
+  }
+  .navitem.active .num{
+    background:linear-gradient(135deg,var(--pink),var(--teal));
+    color:#fff;
+  }
+
+  .sidebar-foot{
+    padding:0 6px;
+    font-size:0.68rem;
+    color:#6f6f8c;
+    line-height:1.6;
+  }
+
+  /* ---------- mobile toggle ---------- */
+  .mobile-bar{
+    display:none;
+    position:sticky;
+    top:0;
+    z-index:50;
+    background:var(--ink);
+    color:#fff;
+    padding:14px 18px;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .burger{
+    background:none;border:none;color:#fff;
+    font-size:1.4rem;cursor:pointer;
+    line-height:1;
+  }
+
+  /* ---------- main ---------- */
+  main{
+    flex:1;
+    min-width:0;
+    padding:48px 56px 100px;
+  }
+  .section{display:none;}
+  .section.active{display:block; animation:fadein .35s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:translateY(0);}}
+
+  .phase-head{
+    margin-bottom:36px;
+  }
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-size:0.74rem;
+    font-weight:700;
+    color:var(--pink-deep);
+    background:#FFE7EC;
+    padding:6px 14px;
+    border-radius:99px;
+    margin-bottom:14px;
+  }
+  .eyebrow.teal{color:#00867A;background:#DFFBF6;}
+  .eyebrow.yellow{color:#9A6B00;background:#FFF3D6;}
+  h1.title{
+    font-size:2.1rem;
+    font-weight:900;
+    line-height:1.3;
+    margin:0 0 10px;
+  }
+  .sub{
+    font-size:0.98rem;
+    color:#5b5b72;
+    max-width:640px;
+    line-height:1.8;
+    margin:0;
+  }
+
+  /* card grid */
+  .stack{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    margin-top:28px;
+  }
+  .step-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:18px 22px;
+    display:flex;
+    align-items:flex-start;
+    gap:16px;
+    box-shadow:var(--shadow);
+  }
+  .step-num{
+    flex-shrink:0;
+    width:34px;height:34px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--pink),var(--pink-deep));
+    color:#fff;
+    font-family:'Zen Maru Gothic',sans-serif;
+    font-weight:900;
+    font-size:0.85rem;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .step-num.teal{background:linear-gradient(135deg,var(--teal),#00A693);}
+  .step-body{flex:1;}
+  .step-body .step-title{
+    font-weight:700;
+    font-size:0.97rem;
+    margin:0 0 4px;
+  }
+  .step-body .step-desc{
+    font-size:0.86rem;
+    color:#6b6b80;
+    line-height:1.7;
+    margin:0;
+  }
+  .step-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    margin-top:10px;
+    padding:8px 18px;
+    border-radius:99px;
+    font-size:0.8rem;
+    font-weight:700;
+    background:var(--ink);
+    color:#fff;
+    transition:transform .15s ease, box-shadow .15s ease;
+    white-space:nowrap;
+  }
+  .step-link:hover{transform:translateY(-2px); box-shadow:0 6px 16px rgba(26,26,46,0.25);}
+  .step-link.video{background:linear-gradient(135deg,#FF3D6E,#FF7A9C);}
+  .step-link.doc{background:linear-gradient(135deg,#00D9C0,#00A693);}
+  .step-link.tool{background:linear-gradient(135deg,#FFC93C,#FFA63C); color:var(--ink);}
+
+  /* sub heading inside section */
+  h3.block-title{
+    font-size:1.05rem;
+    font-weight:700;
+    margin:38px 0 14px;
+    padding-top:4px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  h3.block-title::before{
+    content:'';
+    width:8px;height:8px;border-radius:50%;
+    background:var(--pink);
+  }
+
+  /* table styling */
+  .table-wrap{
+    overflow-x:auto;
+    margin:20px 0;
+    border-radius:16px;
+    border:1px solid var(--line);
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+    font-size:0.84rem;
+  }
+  th,td{
+    padding:12px 14px;
+    text-align:center;
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+  }
+  thead th{
+    background:#FFF1F4;
+    color:var(--pink-deep);
+    font-weight:700;
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:#FFFBF3;}
+
+  /* link grid for resource lists */
+  .link-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+    gap:12px;
+    margin-top:18px;
+  }
+  .link-chip{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:13px 16px;
+    font-size:0.83rem;
+    font-weight:500;
+    box-shadow:var(--shadow);
+    transition:transform .15s ease, border-color .15s ease;
+  }
+  .link-chip:hover{transform:translateY(-2px); border-color:var(--pink);}
+  .link-chip .ic{
+    flex-shrink:0;
+    width:30px;height:30px;
+    border-radius:9px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:0.85rem;
+    color:#fff;
+  }
+  .ic.yt{background:#FF3D6E;}
+  .ic.gd{background:#00D9C0;}
+  .ic.cv{background:#FFC93C; color:var(--ink);}
+  .ic.fm{background:#7A7AE0;}
+
+  .note{
+    background:#FFF3D6;
+    border-left:4px solid var(--yellow);
+    border-radius:10px;
+    padding:14px 18px;
+    font-size:0.84rem;
+    color:#5b4a14;
+    line-height:1.8;
+    margin:20px 0;
+  }
+  .note.pink{background:#FFE7EC;border-left-color:var(--pink);color:#7a1430;}
+  .note.teal{background:#DFFBF6;border-left-color:var(--teal);color:#0a4d44;}
+
+  .freq-pills{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:18px;
+  }
+  .freq-pill{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:14px 18px;
+    text-align:center;
+    flex:1;
+    min-width:90px;
+    box-shadow:var(--shadow);
+  }
+  .freq-pill .fp-num{
+    font-family:'Zen Maru Gothic',sans-serif;
+    font-weight:900;
+    font-size:1.3rem;
+    color:var(--pink-deep);
+  }
+  .freq-pill .fp-days{
+    font-size:0.74rem;
+    color:#6b6b80;
+    margin-top:4px;
+  }
+
+  /* hero on home */
+  .hero{
+    background:linear-gradient(135deg, #1A1A2E 0%, #2A1A3E 100%);
+    border-radius:28px;
+    padding:48px 44px;
+    color:#fff;
+    position:relative;
+    overflow:hidden;
+    margin-bottom:40px;
+  }
+  .hero::before{
+    content:'';
+    position:absolute;
+    right:-60px;top:-60px;
+    width:240px;height:240px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(255,61,110,0.35), transparent 70%);
+  }
+  .hero::after{
+    content:'';
+    position:absolute;
+    left:-40px;bottom:-80px;
+    width:200px;height:200px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(0,217,192,0.3), transparent 70%);
+  }
+  .hero-inner{position:relative; z-index:1;}
+  .hero .hero-eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:0.78rem;font-weight:700;
+    background:rgba(255,255,255,0.1);
+    padding:6px 16px;border-radius:99px;
+    margin-bottom:18px;
+  }
+  .hero h1{
+    font-size:2.5rem;
+    font-weight:900;
+    line-height:1.35;
+    margin:0 0 16px;
+    max-width:560px;
+  }
+  .hero p{
+    font-size:1rem;
+    color:#cfcfe0;
+    max-width:520px;
+    line-height:1.9;
+    margin:0 0 28px;
+  }
+  .hero-stats{
+    display:flex;
+    gap:28px;
+    flex-wrap:wrap;
+  }
+  .hstat{
+    display:flex;flex-direction:column;gap:2px;
+  }
+  .hstat .hv{
+    font-family:'Zen Maru Gothic',sans-serif;
+    font-weight:900;
+    font-size:1.5rem;
+    background:linear-gradient(135deg,var(--pink),var(--teal));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .hstat .hl{font-size:0.72rem;color:#9999b3;}
+
+  .home-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:16px;
+  }
+  .home-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    cursor:pointer;
+    transition:transform .15s ease;
+  }
+  .home-card:hover{transform:translateY(-4px);}
+  .home-card .hc-icon{
+    width:44px;height:44px;
+    border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.2rem;
+    margin-bottom:14px;
+  }
+  .home-card .hc-title{font-weight:700; font-size:0.95rem; margin:0 0 6px;}
+  .home-card .hc-desc{font-size:0.8rem; color:#6b6b80; line-height:1.6; margin:0;}
+
+  footer.page-footer{
+    margin-top:60px;
+    padding-top:24px;
+    border-top:1px solid var(--line);
+    font-size:0.78rem;
+    color:#9999a8;
+  }
+
+  /* scroll-margin so anchor jumps don't hide under sticky bars */
+  :focus-visible{outline:3px solid var(--teal); outline-offset:2px;}
+
+  @media (max-width: 900px){
+    .sidebar{
+      position:fixed;
+      left:0; top:0;
+      height:100vh;
+      transform:translateX(-100%);
+      transition:transform .25s ease;
+      z-index:100;
+      width:78vw;
+      max-width:300px;
+    }
+    .sidebar.open{transform:translateX(0);}
+    .mobile-bar{display:flex;}
+    main{padding:32px 20px 80px;}
+    .hero{padding:32px 24px;}
+    .hero h1{font-size:1.7rem;}
+    h1.title{font-size:1.6rem;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+
+  /* ---------- dev test switch (preview only, remove before real Supabase wiring if desired) ---------- */
+  .dev-switch{
+    position:fixed;
+    bottom:16px;
+    right:16px;
+    z-index:300;
+    background:#1A1A2E;
+    color:#fff;
+    border-radius:14px;
+    padding:10px 14px;
+    font-size:0.72rem;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.3);
+    font-family:'Noto Sans JP',sans-serif;
+  }
+  .dev-switch label{display:flex;align-items:center;gap:6px;cursor:pointer;}
+  .dev-switch input{cursor:pointer;}
+  .dev-switch .tag{
+    background:var(--pink);
+    border-radius:6px;
+    padding:2px 8px;
+    font-weight:700;
+    font-size:0.65rem;
+  }
+
+  /* ---------- login overlay ---------- */
+  .login-overlay{
+    position:fixed;
+    inset:0;
+    z-index:200;
+    background:linear-gradient(135deg, #1A1A2E 0%, #2A1A3E 100%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  .login-overlay::before{
+    content:'';
+    position:absolute;
+    right:-80px;top:-80px;
+    width:300px;height:300px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(255,61,110,0.35), transparent 70%);
+  }
+  .login-overlay::after{
+    content:'';
+    position:absolute;
+    left:-60px;bottom:-100px;
+    width:260px;height:260px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(0,217,192,0.3), transparent 70%);
+  }
+  .login-card{
+    position:relative;
+    z-index:1;
+    background:#fff;
+    border-radius:24px;
+    padding:44px 38px;
+    width:100%;
+    max-width:380px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.35);
+    text-align:center;
+  }
+  .login-card .login-brand{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-family:'Zen Maru Gothic',sans-serif;
+    font-weight:900;
+    font-size:1rem;
+    margin-bottom:22px;
+    color:var(--ink);
+  }
+  .login-card .login-brand .dot{
+    width:14px;height:14px;border-radius:50%;
+    background:linear-gradient(135deg,var(--pink),var(--teal));
+  }
+  .login-card h2{
+    font-family:'Zen Maru Gothic',sans-serif;
+    font-size:1.3rem;
+    font-weight:900;
+    margin:0 0 8px;
+    color:var(--ink);
+  }
+  .login-card p.lc-sub{
+    font-size:0.84rem;
+    color:#6b6b80;
+    line-height:1.7;
+    margin:0 0 26px;
+  }
+  .login-input{
+    width:100%;
+    padding:14px 16px;
+    border-radius:14px;
+    border:1.5px solid var(--line);
+    font-size:0.9rem;
+    font-family:'Noto Sans JP',sans-serif;
+    margin-bottom:14px;
+    outline:none;
+    transition:border-color .15s ease;
+  }
+  .login-input:focus{border-color:var(--pink);}
+  .login-btn{
+    width:100%;
+    padding:14px;
+    border-radius:14px;
+    border:none;
+    background:linear-gradient(135deg,var(--pink),var(--pink-deep));
+    color:#fff;
+    font-family:'Zen Maru Gothic',sans-serif;
+    font-weight:700;
+    font-size:0.92rem;
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .login-btn:hover{transform:translateY(-2px); box-shadow:0 8px 20px rgba(255,61,110,0.35);}
+  .login-status{
+    margin-top:16px;
+    font-size:0.8rem;
+    color:#00867A;
+    min-height:18px;
+  }
+  .login-card .lc-note{
+    margin-top:24px;
+    font-size:0.72rem;
+    color:#9999a8;
+    line-height:1.6;
+  }
+  .lc-text-btn{
+    background:none;
+    border:none;
+    color:#9999a8;
+    font-size:0.78rem;
+    cursor:pointer;
+    font-family:'Noto Sans JP',sans-serif;
+    padding:4px 0;
+    text-decoration:underline;
+    text-underline-offset:2px;
+  }
+  .lc-text-btn:hover{color:var(--pink);}
+
+  .app.locked{
+    filter:blur(2px);
+    pointer-events:none;
+    user-select:none;
+  }
+
+  /* ---------- top bar: user info + logout ---------- */
+  .user-bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin:0 6px 4px;
+    padding:10px 12px;
+    background:rgba(255,255,255,0.05);
+    border-radius:14px;
+    font-size:0.74rem;
+    color:#d7d7e6;
+  }
+  .user-bar .ub-email{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    max-width:160px;
+  }
+  .user-bar button{
+    background:rgba(255,255,255,0.1);
+    border:none;
+    color:#fff;
+    border-radius:8px;
+    padding:5px 10px;
+    font-size:0.68rem;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .user-bar button:hover{background:rgba(255,255,255,0.18);}
+
+  /* ---------- completion checkbox on step cards ---------- */
+  .step-card{position:relative;}
+  .complete-toggle{
+    flex-shrink:0;
+    width:26px;height:26px;
+    border-radius:50%;
+    border:2px solid var(--line);
+    background:#fff;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:0.78rem;
+    color:transparent;
+    transition:background .15s ease, border-color .15s ease, color .15s ease;
+    margin-left:auto;
+    align-self:flex-start;
+  }
+  .complete-toggle:hover{border-color:var(--pink);}
+  .complete-toggle.done{
+    background:linear-gradient(135deg,var(--teal),#00A693);
+    border-color:transparent;
+    color:#fff;
+  }
+  .step-card.is-done{
+    background:#FAFFFE;
+    border-color:#CFF3EC;
+  }
+  .step-card.is-done .step-title{
+    color:#6b6b80;
+    text-decoration:line-through;
+    text-decoration-color:#CFE8E2;
+  }
+
+  /* ---------- visited badge on external links ---------- */
+  .step-link, .link-chip{position:relative;}
+  .visited-badge{
+    display:none;
+    margin-left:6px;
+    font-size:0.68rem;
+    background:rgba(255,255,255,0.25);
+    border-radius:99px;
+    padding:1px 8px;
+    font-weight:700;
+  }
+  .link-chip .visited-badge{
+    background:#DFFBF6;
+    color:#00867A;
+  }
+  .step-link.visited .visited-badge,
+  .link-chip.visited .visited-badge{display:inline-block;}
+  .link-chip.visited{border-color:#CFF3EC;}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN OVERLAY ============ -->
+<div class="login-overlay" id="loginOverlay">
+
+  <!-- Step 1: メール＋パスワードでログイン / 新規登録 -->
+  <div class="login-card" id="loginStep1">
+    <div class="login-brand"><span class="dot"></span>SAKUMASCHOOL</div>
+    <h2 id="loginTitle">ログイン</h2>
+    <p class="lc-sub" id="loginSubtitle">メールアドレスとパスワードを入力してください。</p>
+    <input class="login-input" type="email" id="loginEmail" placeholder="メールアドレス" autocomplete="email">
+    <input class="login-input" type="password" id="loginPassword" placeholder="パスワード（8文字以上）" autocomplete="current-password">
+    <button class="login-btn" id="loginBtn">ログイン</button>
+    <div class="login-status" id="loginStatus"></div>
+    <div style="display:flex; justify-content:space-between; margin-top:14px;">
+      <button class="lc-text-btn" id="switchToRegister">初めての方はこちら</button>
+      <button class="lc-text-btn" id="switchToReset">パスワードを忘れた</button>
+    </div>
+  </div>
+
+  <!-- Step 1b: 新規登録モード -->
+  <div class="login-card" id="loginStep1b" style="display:none;">
+    <div class="login-brand"><span class="dot"></span>SAKUMASCHOOL</div>
+    <h2>アカウント登録</h2>
+    <p class="lc-sub">メールアドレスとパスワードを設定してください。</p>
+    <input class="login-input" type="email" id="registerEmail" placeholder="メールアドレス" autocomplete="email">
+    <input class="login-input" type="password" id="registerPassword" placeholder="パスワード（8文字以上）" autocomplete="new-password">
+    <input class="login-input" type="password" id="registerPasswordConfirm" placeholder="パスワード（確認）" autocomplete="new-password">
+    <button class="login-btn" id="registerBtn">登録する</button>
+    <div class="login-status" id="registerStatus"></div>
+    <button class="lc-text-btn" id="switchToLogin" style="margin-top:14px;">ログインに戻る</button>
+  </div>
+
+  <!-- Step 1c: パスワードリセット -->
+  <div class="login-card" id="loginStep1c" style="display:none;">
+    <div class="login-brand"><span class="dot"></span>SAKUMASCHOOL</div>
+    <h2>パスワードをリセット</h2>
+    <p class="lc-sub">登録したメールアドレスにリセット用リンクを送ります。</p>
+    <input class="login-input" type="email" id="resetEmail" placeholder="メールアドレス">
+    <button class="login-btn" id="resetBtn">リセットリンクを送る</button>
+    <div class="login-status" id="resetStatus"></div>
+    <button class="lc-text-btn" id="switchToLoginFromReset" style="margin-top:14px;">ログインに戻る</button>
+  </div>
+
+  <!-- Step 2: 初回ログイン時の名前入力 -->
+  <div class="login-card" id="loginStep2" style="display:none;">
+    <div class="login-brand"><span class="dot"></span>SAKUMASCHOOL</div>
+    <h2>はじめまして！👋</h2>
+    <p class="lc-sub">サイト内での呼び方を教えてください。あとから変えることもできます。</p>
+    <input class="login-input" type="text" id="nicknameInput" placeholder="例：さくま、田中さん" maxlength="20" autocomplete="off">
+    <button class="login-btn" id="saveNicknameBtn">決定してスタート 🚀</button>
+    <div class="login-status" id="nicknameStatus"></div>
+  </div>
+
+  <!-- Step 1d: パスワード更新（リセットメールから来た時のみ表示） -->
+  <div class="login-card" id="loginStep1c-update" style="display:none;">
+    <div class="login-brand"><span class="dot"></span>SAKUMASCHOOL</div>
+    <h2>新しいパスワードを設定</h2>
+    <p class="lc-sub">新しいパスワードを入力してください（8文字以上）。</p>
+    <input class="login-input" type="password" id="updateNewPassword" placeholder="新しいパスワード" autocomplete="new-password">
+    <input class="login-input" type="password" id="updateNewPasswordConfirm" placeholder="新しいパスワード（確認）" autocomplete="new-password">
+    <button class="login-btn" id="updatePasswordBtn">パスワードを更新する</button>
+    <div class="login-status" id="updatePasswordStatus"></div>
+  </div>
+
+</div>
+  <div class="brand"><span class="dot"></span>SAKUMASCHOOL</div>
+  <button class="burger" id="burgerBtn" aria-label="メニューを開く">☰</button>
+</div>
+
+<div class="app locked" id="appRoot">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><span class="dot"></span>SAKUMASCHOOL<br><small>TikTok大全 / 学習ハブ</small></div>
+
+    <div class="user-bar" id="userBar">
+      <span class="ub-email" id="userEmailLabel">—</span>
+      <button id="logoutBtn">ログアウト</button>
+    </div>
+
+    <div class="progress-rail">
+      <div class="pr-label">進捗イメージ（自走〜3ヶ月目）</div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="--pct:0%"></div></div>
+      <div class="progress-pct" id="progressLabel">0 / 0 ステップ完了</div>
+    </div>
+
+    <nav class="menu" id="menu">
+      <div class="navgroup-title">はじめに</div>
+      <div class="navitem" data-target="home"><span class="num">―</span>ホーム</div>
+      <div class="navitem" data-target="mind"><span class="num">M</span>マインド研修</div>
+
+      <div class="navgroup-title">ロードマップ</div>
+      <div class="navitem" data-target="phase1"><span class="num">1</span>0〜10日：準備期間</div>
+      <div class="navitem" data-target="phase2"><span class="num">2</span>11〜30日：基礎投稿</div>
+      <div class="navitem" data-target="phase3"><span class="num">3</span>商品設計</div>
+      <div class="navitem" data-target="phase4"><span class="num">4</span>2ヶ月目：導線特化</div>
+      <div class="navitem" data-target="phase5"><span class="num">5</span>3ヶ月目：営業特化</div>
+
+      <div class="navgroup-title">リソース</div>
+      <div class="navitem" data-target="payment"><span class="num">P</span>決済フォーム〜契約</div>
+      <div class="navitem" data-target="library"><span class="num">L</span>特典・教材ライブラリ</div>
+      <div class="navitem" data-target="videos"><span class="num">V</span>添削動画一覧</div>
+    </nav>
+
+    <div class="sidebar-foot">© SAKUMASCHOOL<br>このサイトは学習用に再構成された非公式ハブです。</div>
+  </aside>
+
+  <main>
+
+    <!-- HOME -->
+    <section class="section active" id="home" data-id="home">
+      <div class="hero">
+        <div class="hero-inner">
+          <span class="hero-eyebrow">🔥 TikTok大全 / 学習ハブ</span>
+          <h1>迷わず進める、<br>あなただけの攻略ロードマップ。</h1>
+          <p>契約から3ヶ月目までの全ステップを、フェーズごとに整理しました。今日やることだけに集中できます。</p>
+          <div class="hero-stats">
+            <div class="hstat"><div class="hv">5</div><div class="hl">フェーズ</div></div>
+            <div class="hstat"><div class="hv">60+</div><div class="hl">解説動画・資料</div></div>
+            <div class="hstat"><div class="hv">3</div><div class="hl">ヶ月で営業特化まで</div></div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="block-title">フェーズから選ぶ</h3>
+      <div class="home-grid">
+        <div class="home-card" data-target="mind">
+          <div class="hc-icon" style="background:#1A1A2E;color:#fff;">🧠</div>
+          <p class="hc-title">マインド研修</p>
+          <p class="hc-desc">研修中も研修後も常に意識する心構え。最初に必ず確認。</p>
+        </div>
+        <div class="home-card" data-target="phase1">
+          <div class="hc-icon" style="background:#FFE7EC;color:#E0235E;">🚀</div>
+          <p class="hc-title">0〜10日：準備期間</p>
+          <p class="hc-desc">ファーストZoomと初回投稿までにやるべきことリスト。</p>
+        </div>
+        <div class="home-card" data-target="phase2">
+          <div class="hc-icon" style="background:#DFFBF6;color:#00867A;">📱</div>
+          <p class="hc-title">11〜30日：基礎投稿</p>
+          <p class="hc-desc">投稿頻度・時間・テロップデザインの型を身につける。</p>
+        </div>
+        <div class="home-card" data-target="phase3">
+          <div class="hc-icon" style="background:#FFF3D6;color:#9A6B00;">💰</div>
+          <p class="hc-title">商品設計</p>
+          <p class="hc-desc">"お金限定"の商品設計と決済フォームの準備。</p>
+        </div>
+        <div class="home-card" data-target="phase4">
+          <div class="hc-icon" style="background:#FFE7EC;color:#E0235E;">🔗</div>
+          <p class="hc-title">2ヶ月目：導線特化投稿</p>
+          <p class="hc-desc">完全自動化販売 or Zoom販売、自分に合う型を選ぶ。</p>
+        </div>
+        <div class="home-card" data-target="phase5">
+          <div class="hc-icon" style="background:#DFFBF6;color:#00867A;">🎯</div>
+          <p class="hc-title">3ヶ月目：営業特化投稿</p>
+          <p class="hc-desc">公式LINEからの相談会導線とステップ配信の自動化。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MIND -->
+    <section class="section" id="mind-sec" data-id="mind">
+      <div class="phase-head">
+        <span class="eyebrow">🧠 はじめに</span>
+        <h1 class="title">マインド研修</h1>
+        <p class="sub">研修を通して、そして研修後も常に意識してもらう心構えです。まずここから確認しましょう。</p>
+      </div>
+
+      <div class="stack">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <p class="step-title">絶対に再生されないスクール運営者の本音</p>
+            <p class="step-desc">ポッドキャスト形式での解説。</p>
+            <a class="step-link doc" href="https://docs.google.com/document/d/1-gAxOJij2i4NdAV24_DHgjII0DhwvRcJGgN_IkBWZ68/edit" target="_blank" rel="noopener">📄 資料を開く</a>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <p class="step-title">よくある質問 / ポリシー</p>
+            <p class="step-desc">講師への質問前に必ず確認したい基本ルール。</p>
+            <a class="step-link doc" href="https://docs.google.com/document/d/1wbXgLNu7eJMlJXPKNkuk2NMCJHZNhHKG2_UID9fhaRI/edit?usp=sharing" target="_blank" rel="noopener">📄 資料を開く</a>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <p class="step-title">スクール生_チャット質問テンプレート</p>
+            <p class="step-desc">質問の型を揃えて、回答スピードを上げる。</p>
+            <a class="step-link doc" href="https://docs.google.com/document/d/1cFbyDTIUWBa3fNIUzS4glLTDq5_eLEoe5RJeG-HUFvc/edit?usp=sharing" target="_blank" rel="noopener">📄 資料を開く</a>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <p class="step-title">代表さくまが使用する仕事道具一覧</p>
+            <p class="step-desc">運用に使っているツール・道具のリスト。</p>
+            <a class="step-link doc" href="https://docs.google.com/document/d/1-8VhQ1MDza8eT9ESo4NGuWKQsImH0RRo8NeZ2oCUumI/edit?usp=sharing" target="_blank" rel="noopener">📄 資料を開く</a>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <p class="step-title">【お金目的の方必見】必要最低限のPCスキルや設定</p>
+            <p class="step-desc">運用を始める前に整えておきたいPC環境。</p>
+            <a class="step-link doc" href="https://docs.google.com/document/d/11Dv4-vxAEY2jLZdvS8A4D5z4_zrhveQUL_SmsaUdaKI/edit?usp=sharing" target="_blank" rel="noopener">📄 資料を開く</a>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <p class="step-title">【お金目的の方必見】TikTok発信側のマナー</p>
+            <p class="step-desc">発信者として守るべき基本マナー。</p>
+            <a class="step-link video" href="https://drive.google.com/file/d/1J_Ibfa9dnghqSeV6fCChxZm_rWhNH-eH/view?usp=sharing" target="_blank" rel="noopener">🎬 動画を見る</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PHASE 1 -->
+    <section class="section" id="phase1-sec" data-id="phase1">
+      <div class="phase-head">
+        <span class="eyebrow">🚀 フェーズ 1</span>
+        <h1 class="title">0〜10日：準備期間の進め方</h1>
+        <p class="sub">契約後、ファーストZoom・初回投稿までにやることをロードマップ形式で確認します。</p>
+        <a class="step-link doc" href="https://docs.google.com/document/d/11gjlYeOWCMfCUX3YL7fKDqA13DdH6FJVmmXxxB_n1Lo/edit#heading=h.6ckayug84a2f" target="_blank" rel="noopener">📄 進捗ロードマップを開く</a>
+      </div>
+
+      <h3 class="block-title">準備〜初回投稿までの22ステップ</h3>
+      <div class="stack">
+        <div class="step-card"><div class="step-num">1</div><div class="step-body"><p class="step-title">この資料をブックマークを確認</p><a class="step-link video" href="https://youtu.be/lbMO65Yf3UQ?si=9A71CjBNRpU3svuR" target="_blank" rel="noopener">🎬 動画を見る</a></div></div>
+        <div class="step-card"><div class="step-num">2</div><div class="step-body"><p class="step-title">Googleドキュメントの使用方法を確認</p><a class="step-link doc" href="https://docs.google.com/document/d/1NvZ0WJvqF17wtAUmz0Yns14x4CehCXUrh1GiT2kp-zw/edit#heading=h.y8oh2r7iu4bl" target="_blank" rel="noopener">📄 資料を開く</a></div></div>
+        <div class="step-card"><div class="step-num">3</div><div class="step-body"><p class="step-title">SAKUMASCHOOLの動画講義を確認</p><a class="step-link video" href="https://fukugyoukosen.my.canva.site/sakumakouzahome" target="_blank" rel="noopener">🎬 講義を見る</a></div></div>
+        <div class="step-card"><div class="step-num">4</div><div class="step-body"><p class="step-title">講師への質問ポリシーを確認</p><a class="step-link doc" href="https://docs.google.com/document/d/1wbXgLNu7eJMlJXPKNkuk2NMCJHZNhHKG2_UID9fhaRI/edit#heading=h.ls5452d12dqd" target="_blank" rel="noopener">📄 資料を開く</a></div></div>
+        <div class="step-card"><div class="step-num">5</div><div class="step-body"><p class="step-title">ファーストZoomのZOOMミーティング共有（契約後5日程度が目安）</p><a class="step-link video" href="https://youtu.be/x8WrD-lTlds?si=L151vy76HBUSVEV1" target="_blank" rel="noopener">🎬 動画を見る</a></div></div>
+        <div class="step-card"><div class="step-num">6</div><div class="step-body"><p class="step-title">オーダーメイド設定をして提出</p><a class="step-link doc" href="https://docs.google.com/document/d/1Ydn39-wcVZ0sclxA3360R_dcf2kvrg9RV0Mpxpg2mec/edit?usp=drive_link" target="_blank" rel="noopener">📄 資料を開く</a></div></div>
+        <div class="step-card"><div class="step-num">7</div><div class="step-body"><p class="step-title">週間目標シート"3W・3H"を記入。以降週1回講師に提出</p><a class="step-link doc" href="https://docs.google.com/document/d/1fpHHpXBqobmYr09EEJa1MbYB8Ui4qmcL7dIsTWkLOq8/edit?usp=sharing" target="_blank" rel="noopener">📄 資料を開く</a></div></div>
+        <div class="step-card"><div class="step-num">8</div><div class="step-body"><p class="step-title">タイムコーディネーションを記入し、提出</p><a class="step-link doc" href="https://docs.google.com/document/d/1HfbGt7en0FZpn2R_Cm14UxNqrgm0zw9hzdURpjBsLkw/edit?usp=sharing" target="_blank" rel="noopener">📄 資料を開く</a></div></div>
+        <div class="step-card"><div class="step-num">9</div><div class="step-body"><p class="step-title">ファーストZoom質問シート提出</p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+            <a class="step-link doc" href="https://docs.google.com/document/d/1udWwlOkXgRa1aD7xc_8krwcgLtr41QiqnnmBw-8HmGw/edit?usp=sharing" target="_blank" rel="noopener">📄 資料を開く</a>
+            <a class="step-link video" href="https://youtube.com/shorts/oAIMSYzhsPg?feature=share" target="_blank" rel="noopener">🎬 共有方法を見る</a>
+          </div>
+        </div></div>
+        <div class="step-card"><div class="step-num">10</div><div class="step-body"><p class="step-title">ファーストZoomにて運用方針決定</p><p class="step-desc">※ファーストZoomは契約完了後最初のZoom面談を指し、契約前の【初回個別相談】とは別です。</p></div></div>
+        <div class="step-card teal-line"><div class="step-num teal">11</div><div class="step-body"><p class="step-title">⇧ここまで自走期間⇧</p></div></div>
+        <div class="step-card"><div class="step-num">12</div><div class="step-body"><p class="step-title">以降カウンセリングシート（加入者専用）をブックマーク</p><a class="step-link doc" href="https://docs.google.com/document/d/1egUIr86ey0v-OuXSQuSeQyClqPG5IkANx-Xxh-mScU0/edit?usp=sharing" target="_blank" rel="noopener">📄 資料を開く</a></div></div>
+        <div class="step-card"><div class="step-num">13</div><div class="step-body"><p class="step-title">スクール生_チャット質問テンプレートを確認</p><a class="step-link doc" href="https://docs.google.com/document/d/1cFbyDTIUWBa3fNIUzS4glLTDq5_eLEoe5RJeG-HUFvc/edit?usp=sharing" target="_blank" rel="noopener">📄 資料を開く</a></div></div>
+        <div class="step-card"><div class="step-num">14</div><div class="step-body"><p class="step-title">コミュニティガイドラインチェックシートを確認</p><a class="step-link doc" href="https://docs.google.com/document/d/14HqdsGX_iX7oN59PaMevBaFHn5dvOBNmmF3uRzJSB7w/edit?usp=sharing" target="_blank" rel="noopener">📄 資料を開く</a></div></div>
+        <div class="step-card"><div class="step-num">15</div><div class="step-body"><p class="step-title">必要物資を購入する</p></div></div>
+        <div class="step-card"><div class="step-num">16</div><div class="step-body"><p class="step-title">届くまではリサーチ／台本作成</p></div></div>
+        <div class="step-card"><div class="step-num">17</div><div class="step-body"><p class="step-title">物資が届き撮影／編集</p></div></div>
+        <div class="step-card"><div class="step-num">18</div><div class="step-body"><p class="step-title">編集動画を提出／講師からFBを受ける</p></div></div>
+        <div class="step-card"><div class="step-num">19</div><div class="step-body"><p class="step-title">動画を1本完成させる</p></div></div>
+        <div class="step-card"><div class="step-num">20</div><div class="step-body"><p class="step-title">アカウント開設</p></div></div>
+        <div class="step-card"><div class="step-num">21</div><div class="step-body"><p class="step-title">初回投稿前チェックリストに回答</p><a class="step-link tool" href="https://forms.gle/Pr1LBTqiKF3nP7XTA" target="_blank" rel="noopener">📝 フォームに回答</a></div></div>
+        <div class="step-card"><div class="step-num">22</div><div class="step-body"><p class="step-title">動画初回投稿 🎉</p></div></div>
+      </div>
+
+      <h3 class="block-title">J）ファーストZoom前「講師への提出資料リスト」</h3>
+      <div class="link-grid">
+        <a class="link-chip" href="https://docs.google.com/document/d/1Ydn39-wcVZ0sclxA3360R_dcf2kvrg9RV0Mpxpg2mec/edit?usp=sharing" target="_blank" rel="noopener"><span class="ic gd">G</span>オーダーメイドシート</a>
+        <a class="link-chip" href="https://docs.google.com/document/d/1fpHHpXBqobmYr09EEJa1MbYB8Ui4qmcL7dIsTWkLOq8/edit?usp=sharing" target="_blank" rel="noopener"><span class="ic gd">G</span>週間目標シート"3W・3H"</a>
+        <a class="link-chip" href="https://docs.google.com/document/d/1HfbGt7en0FZpn2R_Cm14UxNqrgm0zw9hzdURpjBsLkw/edit?usp=sharing" target="_blank" rel="noopener"><span class="ic gd">G</span>タイムコーディネーション</a>
+        <a class="link-chip" href="https://docs.google.com/document/d/1udWwlOkXgRa1aD7xc_8krwcgLtr41QiqnnmBw-8HmGw/edit?usp=sharing" target="_blank" rel="noopener"><span class="ic gd">G</span>ファーストZoom質問シート</a>
+      </div>
+
+      <h3 class="block-title">V）動画初回投稿前「講師への提出資料リスト」</h3>
+      <div class="link-grid">
+        <a class="link-chip" href="https://docs.google.com/document/d/1egUIr86ey0v-OuXSQuSeQyClqPG5IkANx-Xxh-mScU0/edit?usp=sharing" target="_blank" rel="noopener"><span class="ic gd">G</span>カウンセリングシート</a>
+        <a class="link-chip" href="https://forms.gle/Pr1LBTqiKF3nP7XTA" target="_blank" rel="noopener"><span class="ic fm">F</span>初回投稿前チェックリスト</a>
+      </div>
+
+      <h3 class="block-title">ファーストZoomまでの作業ペース「1例」</h3>
+      <a class="step-link doc" href="https://docs.google.com/document/d/11gjlYeOWCMfCUX3YL7fKDqA13DdH6FJVmmXxxB_n1Lo/edit?usp=sharing" target="_blank" rel="noopener" style="margin-bottom:18px; display:inline-block;">📄 進捗ロードマップはこちら</a>
+      <div class="note pink">✅ 講師からの初回個別相談での攻略ロードマップを受け取ってからスタートします。</div>
+
+      <div class="stack">
+        <div class="step-card"><div class="step-num">1日目</div><div class="step-body"><p class="step-title">インプット</p><p class="step-desc">マインド研修を確認 ／ SAKUMASCHOOLの動画講義を視聴</p></div></div>
+        <div class="step-card"><div class="step-num">2日目</div><div class="step-body"><p class="step-title">アウトプット</p><p class="step-desc">マインド研修で取り入れられそうな点をまとめる ／ マンダラチャート作成 ／ ファーストZoomで講師への質問事項をまとめる</p><a class="step-link doc" href="https://docs.google.com/document/d/1udWwlOkXgRa1aD7xc_8krwcgLtr41QiqnnmBw-8HmGw/edit?usp=sharing" target="_blank" rel="noopener">📄 質問シートを開く</a></div></div>
+        <div class="step-card"><div class="step-num">3日目</div><div class="step-body"><p class="step-title">リサーチ＆台本</p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+            <a class="step-link video" href="https://youtu.be/HOT7ojK1nb0" target="_blank" rel="noopener">🎬 リサーチ方法</a>
+            <a class="step-link video" href="https://youtu.be/GbRh_eOBb1c?si=60-iQ-SA5qklmHYe" target="_blank" rel="noopener">🎬 台本の作り方</a>
+            <a class="step-link video" href="https://drive.google.com/file/d/1T1qaOqXqM5jxNaQuz8EEW8i2_ddZyWs7/view?usp=drive_link" target="_blank" rel="noopener">🎬 ネガティブ訴求＆コメント戦略</a>
+            <a class="step-link doc" href="https://docs.google.com/spreadsheets/d/1vqxJvoBGycqLLV9IDqklbrt__dSNcvFyFn5l9xREOGw/edit?usp=sharing" target="_blank" rel="noopener">📊 台本分析シート</a>
+          </div>
+        </div></div>
+        <div class="step-card"><div class="step-num">4日目</div><div class="step-body"><p class="step-title">撮影</p><p class="step-desc">撮影小道具の設置（ライト・マイク・三脚など）→ 台本を見ながら撮影 → 撮影データをまとめる</p><a class="step-link video" href="https://youtu.be/a6RWIhhN3-4" target="_blank" rel="noopener">🎬 撮影方法を見る</a></div></div>
+        <div class="step-card"><div class="step-num">5日目</div><div class="step-body"><p class="step-title">編集＆再提出準備</p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+            <a class="step-link video" href="https://youtu.be/JER8QaEpKIM" target="_blank" rel="noopener">🎬 CapCutでの編集</a>
+            <a class="step-link doc" href="https://docs.google.com/document/d/1Ydn39-wcVZ0sclxA3360R_dcf2kvrg9RV0Mpxpg2mec/edit?usp=sharing" target="_blank" rel="noopener">📄 オーダーメイド設計</a>
+          </div>
+        </div></div>
+        <div class="step-card"><div class="step-num">6日目</div><div class="step-body"><p class="step-title">契約後初めての講師とのZoom</p><p class="step-desc">ZoomでのToDoリストを参考に、運用を進めましょう🔥</p></div></div>
+      </div>
+    </section>
+
+    <!-- PHASE 2 -->
+    <section class="section" id="phase2-sec" data-id="phase2">
+      <div class="phase-head">
+        <span class="eyebrow teal">📱 フェーズ 2</span>
+        <h1 class="title">11〜30日間：基礎投稿</h1>
+        <p class="sub">投稿の本数を重ね、リサーチ→台本→編集→投稿のサイクルを定着させる期間です。</p>
+        <a class="step-link doc" href="https://docs.google.com/document/d/11gjlYeOWCMfCUX3YL7fKDqA13DdH6FJVmmXxxB_n1Lo/edit#heading=h.xg4vic1ywsxb" target="_blank" rel="noopener">📄 進捗ロードマップを開く</a>
+      </div>
+
+      <div class="stack">
+        <div class="step-card"><div class="step-num teal">1</div><div class="step-body"><p class="step-title">発信前添削⇨結果ベースの添削に</p></div></div>
+        <div class="step-card"><div class="step-num teal">2</div><div class="step-body"><p class="step-title">TikTokの投稿本数分作成</p></div></div>
+        <div class="step-card"><div class="step-num teal">3</div><div class="step-body"><p class="step-title">「リサーチ⇨台本作成⇨編集⇨投稿」をひたすら繰り返す</p></div></div>
+        <div class="step-card"><div class="step-num teal">4</div><div class="step-body"><p class="step-title">ネガティブ訴求コメント戦略などの言い換えを常に意識</p></div></div>
+        <div class="step-card"><div class="step-num teal">5</div><div class="step-body"><p class="step-title">よくある質問 / ポリシー</p><a class="step-link doc" href="https://docs.google.com/document/d/1wbXgLNu7eJMlJXPKNkuk2NMCJHZNhHKG2_UID9fhaRI/edit?usp=sharing" target="_blank" rel="noopener">📄 資料を開く</a></div></div>
+        <div class="step-card"><div class="step-num teal">6</div><div class="step-body"><p class="step-title">動画の改善点などは随時講師と相談しながら進める</p></div></div>
+        <div class="step-card"><div class="step-num teal">7</div><div class="step-body"><p class="step-title">投稿後の動画改善点を講師にチャット質問</p><a class="step-link tool" href="https://forms.gle/CKHQRxKFKvEwFhnV6" target="_blank" rel="noopener">📝 質問フォーム</a></div></div>
+        <div class="step-card"><div class="step-num teal">8</div><div class="step-body"><p class="step-title">講師とミーティング</p><a class="step-link tool" href="https://forms.gle/ehmsj3P7NuUVroU76" target="_blank" rel="noopener">📝 ミーティング予約</a></div></div>
+        <div class="step-card"><div class="step-num teal">9</div><div class="step-body"><p class="step-title">1000人フォロワーを目指しましょう！</p></div></div>
+      </div>
+
+      <h3 class="block-title">投稿頻度</h3>
+      <p class="sub">大事なのは「迷いを減らす」ことと「継続する指標」を持つことの２つ。シビアに考えず、下記を参考に自走期間中も変えずに継続しましょう。</p>
+      <div class="note pink">投稿頻度を変えていいのは「コメント返信が追いつかなくなった時」のみ。視聴者とのコミュニケーションが最優先なので、その時は週1〜2投稿に落として、コメント返信に時間を割いてください。</div>
+      <div class="freq-pills">
+        <div class="freq-pill"><div class="fp-num">週2</div><div class="fp-days">水・土</div></div>
+        <div class="freq-pill"><div class="fp-num">週3</div><div class="fp-days">水・金・日</div></div>
+        <div class="freq-pill"><div class="fp-num">週4</div><div class="fp-days">月・水・金・土</div></div>
+        <div class="freq-pill"><div class="fp-num">週5</div><div class="fp-days">火・木・金・土・日</div></div>
+        <div class="freq-pill"><div class="fp-num">週6</div><div class="fp-days">火〜土・日</div></div>
+        <div class="freq-pill"><div class="fp-num">週7</div><div class="fp-days">毎日</div></div>
+      </div>
+
+      <h3 class="block-title">投稿時間</h3>
+      <p class="sub">平日も土日もルーティーンはさほど変わらないので、同じ時間帯で大丈夫です。ジャンルごとの最適な時間帯は下表を参考にしてください（◎が特におすすめ）。</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>ジャンル ＼ 時間</th><th>6〜9時</th><th>13〜16時</th><th>16〜17.5時</th><th>17.5〜19時</th><th>21.5〜25時</th></tr>
+          </thead>
+          <tbody>
+            <tr><td style="text-align:left;font-weight:700;">TikTok攻略</td><td></td><td></td><td>○</td><td>○</td><td>◎</td></tr>
+            <tr><td style="text-align:left;font-weight:700;">副業</td><td>○</td><td></td><td></td><td>○</td><td>◎</td></tr>
+            <tr><td style="text-align:left;font-weight:700;">営業</td><td>○</td><td></td><td>◎</td><td></td><td>○</td></tr>
+            <tr><td style="text-align:left;font-weight:700;">自己啓発</td><td>○</td><td></td><td></td><td></td><td>◎</td></tr>
+            <tr><td style="text-align:left;font-weight:700;">ハンドメイド</td><td></td><td>○</td><td>◎</td><td></td><td>○</td></tr>
+            <tr><td style="text-align:left;font-weight:700;">美容</td><td>○</td><td></td><td></td><td></td><td>◎</td></tr>
+            <tr><td style="text-align:left;font-weight:700;">語学</td><td>○</td><td></td><td></td><td>○</td><td>◎</td></tr>
+            <tr><td style="text-align:left;font-weight:700;">スイーツ系</td><td></td><td></td><td>◎</td><td></td><td></td></tr>
+            <tr><td style="text-align:left;font-weight:700;">音楽系</td><td></td><td></td><td></td><td></td><td>◎</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="block-title">テロップデザイン</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>ジャンル</th><th>フォント</th><th>色</th><th>枠</th><th>画面文字数</th><th>バランス（漢:ひ:カ）</th></tr>
+          </thead>
+          <tbody>
+            <tr><td style="text-align:left;font-weight:700;">TikTok攻略</td><td>明朝体</td><td>白</td><td>黒</td><td>14</td><td>3:5:2</td></tr>
+            <tr><td style="text-align:left;font-weight:700;">副業</td><td>ゴシック体</td><td>黒</td><td>白</td><td>14</td><td>3:5:2</td></tr>
+            <tr><td style="text-align:left;font-weight:700;">営業</td><td>明朝体</td><td>黒</td><td>白</td><td>14</td><td>3:5:2</td></tr>
+            <tr><td style="text-align:left;font-weight:700;">自己啓発</td><td>ゴシック体</td><td>黒</td><td>白</td><td>14</td><td>3:5:2</td></tr>
+            <tr><td style="text-align:left;font-weight:700;">ハンドメイド</td><td>明朝体</td><td>ピンク</td><td>白</td><td>60</td><td>3:5:2</td></tr>
+            <tr><td style="text-align:left;font-weight:700;">美容</td><td>ゴシック体</td><td>白</td><td>無し</td><td>60</td><td>3:5:2</td></tr>
+            <tr><td style="text-align:left;font-weight:700;">語学</td><td>明朝体</td><td>青</td><td>無し</td><td>60</td><td>3:5:2</td></tr>
+            <tr><td style="text-align:left;font-weight:700;">スイーツ系</td><td>ゴシック体</td><td>茶色</td><td>白</td><td>60</td><td>3:5:2</td></tr>
+            <tr><td style="text-align:left;font-weight:700;">音楽系</td><td>ゴシック体</td><td>白</td><td>無し</td><td>14</td><td>1:8:1</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- PHASE 3: PRODUCT DESIGN -->
+    <section class="section" id="phase3-sec" data-id="phase3">
+      <div class="phase-head">
+        <span class="eyebrow yellow">💰 フェーズ 3</span>
+        <h1 class="title">11〜30日間："お金限定"商品設計</h1>
+        <p class="sub">自分の状況に応じた商品設計の型と、決済フォーム〜契約までの準備を確認します。</p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;">
+          <a class="step-link doc" href="https://docs.google.com/document/d/11gjlYeOWCMfCUX3YL7fKDqA13DdH6FJVmmXxxB_n1Lo/edit#heading=h.xg4vic1ywsxb" target="_blank" rel="noopener">📄 進捗ロードマップ</a>
+          <a class="step-link tool" href="https://docs.google.com/spreadsheets/d/1wGdJb2MWLEOz7n_P8gUtN915vPxIJtecspG4YGIskG0/edit?usp=sharing" target="_blank" rel="noopener">📊 商品リサーチ例</a>
+        </div>
+      </div>
+
+      <div class="note">認可バディ審査をご希望の方は別途契約が必要です。お申し出ください。</div>
+
+      <h3 class="block-title">"自分の商品"を持たない場合</h3>
+      <div class="step-card">
+        <div class="step-num">A</div>
+        <div class="step-body">
+          <p class="step-desc">結論、SAKUMASCHOOL（このスクール自体）が商品になります（SAKUMASCHOOL認可バディ）。公式LINEの顧客リストと商談をスクールと共同管理するので、収益化が最短で達成できます。</p>
+          <a class="step-link doc" href="https://docs.google.com/document/d/1YxixUTeRExNkjKc6uQx0yhOl7WZRtRASyitPxhMgd6E/edit?usp=sharing" target="_blank" rel="noopener">📄 営業テンプレ_商品販売方法</a>
+        </div>
+      </div>
+
+      <h3 class="block-title">"自分の商品"が現状無いが、今後作っていく場合</h3>
+      <div class="step-card">
+        <div class="step-num">B</div>
+        <div class="step-body">
+          <p class="step-desc">高単価コンサルスクール（30万円以上）、または低単価の情報商品（5万円以下程度）を作成・販売します。手間はかかりますが、月300万円以上の大きなマネタイズを目指す方は、こちらも必ず同時並行で進めましょう🔥</p>
+        </div>
+      </div>
+
+      <h3 class="block-title">"自分の商品"がある場合</h3>
+      <div class="step-card">
+        <div class="step-num">C</div>
+        <div class="step-body">
+          <p class="step-desc">あなたのショップの商品を、自社ショップ・公式LINE・代理店経由で販売します。</p>
+        </div>
+      </div>
+
+      <h3 class="block-title">プレゼン資料テンプレート</h3>
+      <div class="link-grid">
+        <a class="link-chip" href="https://www.canva.com/design/DAGRRZWe2Vc/VOrfRCQiLPd2AG53IbSfFA/edit?utm_content=DAGRRZWe2Vc&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton" target="_blank" rel="noopener"><span class="ic cv">C</span>無料プレゼント資料テンプレート</a>
+        <a class="link-chip" href="https://www.canva.com/design/DAGEEqjSjgI/okqVCyPGQk5j04xFaq-BDQ/edit?utm_content=DAGEEqjSjgI&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton" target="_blank" rel="noopener"><span class="ic cv">C</span>高単価プレゼン資料テンプレート（30万円以上）</a>
+      </div>
+      <div class="note teal">テンプレートはデザインやフォントを変えて活用OK。内容は丸パクリで大丈夫ですが、語尾や色使いは自分らしく変更しましょう。</div>
+    </section>
+
+    <!-- PHASE 4 -->
+    <section class="section" id="phase4-sec" data-id="phase4">
+      <div class="phase-head">
+        <span class="eyebrow">🔗 フェーズ 4</span>
+        <h1 class="title">2ヶ月目：導線特化投稿</h1>
+        <p class="sub">フォロワー1000人を目指しながら、商品を届ける導線を構築する期間です。</p>
+        <a class="step-link doc" href="https://docs.google.com/document/d/11gjlYeOWCMfCUX3YL7fKDqA13DdH6FJVmmXxxB_n1Lo/edit#heading=h.e1qrhzts9x7g" target="_blank" rel="noopener">📄 進捗ロードマップを開く</a>
+      </div>
+
+      <h3 class="block-title">完全自動化販売の場合</h3>
+      <p class="sub">自分の時間を使わずに運用システムだけ構築すれば、時間にゆとりが生まれます。</p>
+      <div class="stack">
+        <div class="step-card"><div class="step-num">1</div><div class="step-body"><p class="step-title">リンクを貼るために1000フォロワーを目指す</p></div></div>
+        <div class="step-card"><div class="step-num">2</div><div class="step-body"><p class="step-title">商品設計や無料プレゼントの作成を完了する</p></div></div>
+        <div class="step-card"><div class="step-num">3</div><div class="step-body"><p class="step-title">LINE追加者にアンケート送信し、回答者に"無料プレゼント"を1日置きに送信</p></div></div>
+        <div class="step-card"><div class="step-num">4</div><div class="step-body"><p class="step-title">"7日間"プレゼントを継続送信し、最終日に商品案内→購入へ</p></div></div>
+      </div>
+
+      <h3 class="block-title">Zoom販売の場合</h3>
+      <p class="sub">再現度が高い方法。To C販売は心を動かさないとお金を払う気にはなりません。5分前入室、PC画面は目線より上、相手入室前にレコーディング（講師の添削用）。</p>
+      <div class="stack">
+        <div class="step-card"><div class="step-num teal">1</div><div class="step-body"><p class="step-title">リンクを貼るために1000フォロワーを目指す</p></div></div>
+        <div class="step-card"><div class="step-num teal">2</div><div class="step-body"><p class="step-title">商品設計や無料プレゼントの作成を完了する</p></div></div>
+        <div class="step-card"><div class="step-num teal">3</div><div class="step-body"><p class="step-title">LINE追加者にアンケート送信し、回答者に"無料相談会"の内容を案内</p></div></div>
+        <div class="step-card"><div class="step-num teal">4</div><div class="step-body"><p class="step-title">無料相談会でお悩み解決後、"商品"のご案内</p></div></div>
+        <div class="step-card"><div class="step-num teal">5</div><div class="step-body"><p class="step-title">決済後、サポートスタート！！</p></div></div>
+      </div>
+    </section>
+
+    <!-- PHASE 5 -->
+    <section class="section" id="phase5-sec" data-id="phase5">
+      <div class="phase-head">
+        <span class="eyebrow teal">🎯 フェーズ 5</span>
+        <h1 class="title">3ヶ月目：営業特化投稿</h1>
+        <p class="sub">公式LINEを軸に、相談会からステップ配信の自動化までを構築します。</p>
+        <a class="step-link doc" href="https://docs.google.com/document/d/11gjlYeOWCMfCUX3YL7fKDqA13DdH6FJVmmXxxB_n1Lo/edit#heading=h.hhtbxzx1ujnl" target="_blank" rel="noopener">📄 進捗ロードマップを開く</a>
+      </div>
+
+      <h3 class="block-title">公式LINEの進め方</h3>
+      <div class="stack">
+        <div class="step-card"><div class="step-num teal">1</div><div class="step-body"><p class="step-title">公式LINEを開設し、TikTok or Instagramのプロフに挿入</p></div></div>
+        <div class="step-card"><div class="step-num teal">2</div><div class="step-body"><p class="step-title">挨拶メッセージ追加（スマホのみの方）</p></div></div>
+        <div class="step-card"><div class="step-num teal">3</div><div class="step-body"><p class="step-title">リッチメッセージからLP⇨Googleフォームアンケート</p><a class="step-link video" href="https://youtu.be/rM59xdPZOj8" target="_blank" rel="noopener">🎬 作成手順を見る</a></div></div>
+        <div class="step-card"><div class="step-num teal">4</div><div class="step-body"><p class="step-title">リッチメニュー設定（自社サイト or 相談誘導）。ステップ配信導入前はURLにリンクさせる</p></div></div>
+        <div class="step-card"><div class="step-num teal">5</div><div class="step-body"><p class="step-title">個別チャットでの親密化</p></div></div>
+        <div class="step-card"><div class="step-num teal">6</div><div class="step-body"><p class="step-title">無料プレゼント配布</p></div></div>
+        <div class="step-card"><div class="step-num teal">7</div><div class="step-body"><p class="step-title">タイムレックスなどのスケジュールアプリで日程調整</p><a class="step-link tool" href="https://timerex.net/" target="_blank" rel="noopener">🔗 TimeRexを開く</a></div></div>
+        <div class="step-card"><div class="step-num teal">8</div><div class="step-body"><p class="step-title">相談会実施</p></div></div>
+        <div class="step-card"><div class="step-num teal">9</div><div class="step-body"><p class="step-title">相談5人程度実施 or LINE登録者50人超で、ステップ配信導入</p></div></div>
+        <div class="step-card"><div class="step-num teal">10</div><div class="step-body"><p class="step-title">メッセージの自動化を実施</p></div></div>
+      </div>
+    </section>
+
+    <!-- PAYMENT -->
+    <section class="section" id="payment-sec" data-id="payment">
+      <div class="phase-head">
+        <span class="eyebrow yellow">💳 リソース</span>
+        <h1 class="title">決済フォーム〜契約</h1>
+        <p class="sub">加入後30日以内に必ず申請してください。決済フォームがあれば分割決済が可能になり、成約率が大きく向上します。</p>
+      </div>
+      <div class="note pink">ほぼ80%以上の方が、申請資料の不備等で一度審査落ちします。Stripe担当者宛にメール対応していただくことで解決できます。<br><a class="step-link tool" style="margin-top:10px;" href="https://stripe.com/jp/contact" target="_blank" rel="noopener">✉️ Stripeへのメール対応</a></div>
+
+      <h3 class="block-title">準備する資料・手順</h3>
+      <div class="stack">
+        <div class="step-card"><div class="step-num">1</div><div class="step-body"><p class="step-title">特定商取引法</p><p class="step-desc">住所は部屋番号まで記載不要。主に返品ポリシーが重要です。</p><a class="step-link doc" href="https://fukugyoukosen.my.canva.site/daf4d6y7wyy" target="_blank" rel="noopener">📄 テンプレートを開く</a></div></div>
+        <div class="step-card"><div class="step-num">2</div><div class="step-body"><p class="step-title">商品概要LP</p><a class="step-link doc" href="https://fukugyoukosen.my.canva.site/2024-2-ver-4" target="_blank" rel="noopener">📄 テンプレートを開く</a></div></div>
+        <div class="step-card"><div class="step-num">3</div><div class="step-body"><p class="step-title">Stripe申請</p><a class="step-link tool" href="https://stripe.com/jp" target="_blank" rel="noopener">🔗 Stripeを開く</a></div></div>
+        <div class="step-card"><div class="step-num">4</div><div class="step-body"><p class="step-title">利用規約</p><a class="step-link doc" href="https://fukugyoukosen.my.canva.site/kiyaku" target="_blank" rel="noopener">📄 テンプレートを開く</a></div></div>
+        <div class="step-card"><div class="step-num">5</div><div class="step-body"><p class="step-title">お客様用決済フォーム</p><a class="step-link doc" href="https://www.canva.com/design/DAGRRWT5-ss/UWQLufVDkewUl95VKpuYhg/edit?utm_content=DAGRRWT5-ss&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton" target="_blank" rel="noopener">📄 テンプレートを開く</a></div></div>
+        <div class="step-card"><div class="step-num">6</div><div class="step-body"><p class="step-title">売買誓約書（本契約書）</p><a class="step-link doc" href="https://docs.google.com/spreadsheets/d/1nshND-DM--nhVYllU5SNc-ijKqAUn7RAhK_YCgVC3EQ/edit?usp=sharing" target="_blank" rel="noopener">📊 シートを開く</a></div></div>
+        <div class="step-card"><div class="step-num">7</div><div class="step-body"><p class="step-title">売買誓約書（別紙）</p><a class="step-link doc" href="https://docs.google.com/document/d/1etGzXZKadKU8lMhr9DLgEPHMPDjiqXnmWNxG8YOuMNA/edit?usp=sharing" target="_blank" rel="noopener">📄 資料を開く</a></div></div>
+        <div class="step-card"><div class="step-num">8</div><div class="step-body"><p class="step-title">Adobe Acrobat 電子サイン</p><a class="step-link tool" href="https://www.adobe.com/jp/acrobat.html" target="_blank" rel="noopener">🔗 Acrobatを開く</a></div></div>
+        <div class="step-card"><div class="step-num">9</div><div class="step-body"><p class="step-title">契約書を特定記録郵便で送付</p><a class="step-link tool" href="https://www.post.japanpost.jp/service/fuka_service/tokutei_kiroku/index.html" target="_blank" rel="noopener">🔗 郵便局サイトを開く</a></div></div>
+      </div>
+
+      <h3 class="block-title">動画解説</h3>
+      <div class="link-grid">
+        <a class="link-chip" href="https://youtu.be/B_gkm5RlQmU" target="_blank" rel="noopener"><span class="ic yt">▶</span>クレジットカード決済の必要性</a>
+        <a class="link-chip" href="https://youtu.be/_tkS3D_OxjE" target="_blank" rel="noopener"><span class="ic yt">▶</span>特定商取引法の表記作成</a>
+        <a class="link-chip" href="https://youtu.be/dEuqbTGjdkU" target="_blank" rel="noopener"><span class="ic yt">▶</span>利用規約</a>
+        <a class="link-chip" href="https://youtu.be/C-K2kNGJGPs" target="_blank" rel="noopener"><span class="ic yt">▶</span>商品概要LP</a>
+        <a class="link-chip" href="https://youtu.be/UmnBuxbNam4" target="_blank" rel="noopener"><span class="ic yt">▶</span>Stripe申請</a>
+        <a class="link-chip" href="https://youtu.be/x2nBrv934Is" target="_blank" rel="noopener"><span class="ic yt">▶</span>Adobe Acrobat 電子サイン</a>
+      </div>
+    </section>
+
+    <!-- LIBRARY -->
+    <section class="section" id="library-sec" data-id="library">
+      <div class="phase-head">
+        <span class="eyebrow">📚 リソース</span>
+        <h1 class="title">有料スクール生限定特典一覧</h1>
+        <p class="sub">SAKUMASCHOOL動画講義より、さらに実践的かつ具体的な解説・テンプレート集です。</p>
+      </div>
+
+      <h3 class="block-title">動画解説</h3>
+      <div class="link-grid">
+        <a class="link-chip" href="https://youtu.be/a6RWIhhN3-4" target="_blank" rel="noopener"><span class="ic yt">▶</span>【認知・夢】のための動画_撮影編</a>
+        <a class="link-chip" href="https://youtu.be/YNF5ansbVMs" target="_blank" rel="noopener"><span class="ic yt">▶</span>【お金】のための動画_撮影編</a>
+        <a class="link-chip" href="https://youtu.be/GbRh_eOBb1c" target="_blank" rel="noopener"><span class="ic yt">▶</span>【金盾ニキ】台本作成の全てを大公開</a>
+        <a class="link-chip" href="https://youtu.be/H0vUdNCrFC4" target="_blank" rel="noopener"><span class="ic yt">▶</span>【金盾ニキ】動画編集の全てを大公開</a>
+        <a class="link-chip" href="https://youtu.be/JER8QaEpKIM" target="_blank" rel="noopener"><span class="ic yt">▶</span>【完全版】CapCut_編集手順_1時間動画</a>
+      </div>
+
+      <h3 class="block-title">PDF</h3>
+      <div class="link-grid">
+        <a class="link-chip" href="https://drive.google.com/file/d/11exxeIxIKkcIm0GMNitZ190xzlgDBvyK/view?usp=drive_link" target="_blank" rel="noopener"><span class="ic gd">G</span>金盾式_TikTok初期設計攻略シート</a>
+        <a class="link-chip" href="https://drive.google.com/file/d/1T1qaOqXqM5jxNaQuz8EEW8i2_ddZyWs7/view?usp=drive_link" target="_blank" rel="noopener"><span class="ic gd">G</span>ネガティブ訴求＆コメント戦略の作成手順</a>
+        <a class="link-chip" href="https://drive.google.com/file/d/1zvpnhnpzuvIgNcuMXZymJQgZFMA84pmI/view?usp=drive_link" target="_blank" rel="noopener"><span class="ic gd">G</span>金盾式_LINE導線完全解説</a>
+        <a class="link-chip" href="https://drive.google.com/file/d/1hZ7tZUUh6HTTVrWJJ4JMv_S8MxaopvFt/view?usp=drive_link" target="_blank" rel="noopener"><span class="ic gd">G</span>金盾式_Lステップ構築テンプレート</a>
+      </div>
+
+      <h3 class="block-title">Google Workspace</h3>
+      <div class="link-grid">
+        <a class="link-chip" href="https://docs.google.com/document/d/11riu5yJ0HFgyicneJbyuRfu8GOvZeObfdru8iNJjKvw/edit?usp=sharing" target="_blank" rel="noopener"><span class="ic gd">G</span>素材サイト一覧</a>
+        <a class="link-chip" href="https://docs.google.com/document/d/1cFbyDTIUWBa3fNIUzS4glLTDq5_eLEoe5RJeG-HUFvc/edit?usp=sharing" target="_blank" rel="noopener"><span class="ic gd">G</span>スクール生_チャット質問テンプレート</a>
+        <a class="link-chip" href="https://drive.google.com/file/d/1VfcZWAIH7MdlEYnBtUYSPjuCTc9DVLLz/view?usp=sharing" target="_blank" rel="noopener"><span class="ic gd">G</span>【週間】3W・3H_Output設定シート</a>
+        <a class="link-chip" href="https://docs.google.com/document/d/1HfbGt7en0FZpn2R_Cm14UxNqrgm0zw9hzdURpjBsLkw/edit?usp=drive_link" target="_blank" rel="noopener"><span class="ic gd">G</span>オーダーメイド設定〜タイムコーディネーション</a>
+        <a class="link-chip" href="https://docs.google.com/document/d/1Ydn39-wcVZ0sclxA3360R_dcf2kvrg9RV0Mpxpg2mec/edit?usp=drive_link" target="_blank" rel="noopener"><span class="ic gd">G</span>金盾式_オーダーメイド設定〜アカウント公開時設定</a>
+        <a class="link-chip" href="https://docs.google.com/spreadsheets/d/1vqxJvoBGycqLLV9IDqklbrt__dSNcvFyFn5l9xREOGw/edit?usp=drive_link" target="_blank" rel="noopener"><span class="ic gd">G</span>台本分析シート</a>
+        <a class="link-chip" href="https://docs.google.com/spreadsheets/d/1wGdJb2MWLEOz7n_P8gUtN915vPxIJtecspG4YGIskG0/edit?usp=sharing" target="_blank" rel="noopener"><span class="ic gd">G</span>TikTokベンチマーク垢</a>
+        <a class="link-chip" href="https://docs.google.com/spreadsheets/u/0/d/1yaZP-YNe-jJhKAH_6xiSo5v_tgcusg9aExsAvaZRZxg/edit" target="_blank" rel="noopener"><span class="ic gd">G</span>TikTokLIVE添削シート</a>
+        <a class="link-chip" href="https://docs.google.com/document/d/14HqdsGX_iX7oN59PaMevBaFHn5dvOBNmmF3uRzJSB7w/edit?usp=sharing" target="_blank" rel="noopener"><span class="ic gd">G</span>コミュニティガイドラインチェックシート</a>
+      </div>
+
+      <h3 class="block-title">Canva</h3>
+      <div class="link-grid">
+        <a class="link-chip" href="https://drive.google.com/file/d/18tnQGORfv8aM4MQ5na-rWGt2EkMRO9m5/view?usp=drive_link" target="_blank" rel="noopener"><span class="ic cv">C</span>金盾式_LPテンプレート集</a>
+        <a class="link-chip" href="https://drive.google.com/file/d/1OOgzG2vqSJjdsNrZO43AhZfoB0Dhn7dv/view?usp=drive_link" target="_blank" rel="noopener"><span class="ic cv">C</span>金盾式_個別相談_テンプレート集</a>
+        <a class="link-chip" href="https://www.canva.com/design/DAGPrlVMvhM/HVeLYA3aMgwf8CXPb_UBMg/view?utm_content=DAGPrlVMvhM&utm_campaign=designshare&utm_medium=link&utm_source=editor" target="_blank" rel="noopener"><span class="ic cv">C</span>【無料プレゼント】配布用表紙テンプレ</a>
+        <a class="link-chip" href="https://www.canva.com/design/DAFuzAm-9RE/zcBlNlS_39EY3I_zJvNnCg/view?utm_content=DAFuzAm-9RE&utm_campaign=designshare&utm_medium=link&utm_source=editor" target="_blank" rel="noopener"><span class="ic cv">C</span>【初回】個別相談資料</a>
+        <a class="link-chip" href="https://www.canva.com/design/DAFqQyvuOYk/k4sU1AF2oJnkF5vbNTWQig/view?utm_content=DAFqQyvuOYk&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink" target="_blank" rel="noopener"><span class="ic cv">C</span>副業初心者チェックリスト228選</a>
+      </div>
+
+      <h3 class="block-title">Canva有料コンサル誘導導線</h3>
+      <div class="link-grid">
+        <a class="link-chip" href="https://youtu.be/CtCi0q9tWdw" target="_blank" rel="noopener"><span class="ic yt">▶</span>資料の作り方_基本〜フレームの使い方〜ジャンル調査</a>
+        <a class="link-chip" href="https://youtu.be/lB_9S0jTk50" target="_blank" rel="noopener"><span class="ic yt">▶</span>資料の作り方_ジャンル競合の調査が必須</a>
+        <a class="link-chip" href="https://youtu.be/0pM8XK5kcpk" target="_blank" rel="noopener"><span class="ic yt">▶</span>資料の作り方_コンサル誘導</a>
+        <a class="link-chip" href="https://youtu.be/f_grmaSRWbg" target="_blank" rel="noopener"><span class="ic yt">▶</span>資料の作り方_LP_WEBサイト作成</a>
+        <a class="link-chip" href="https://youtu.be/-mrz7NuEcwM" target="_blank" rel="noopener"><span class="ic yt">▶</span>【顔出し無し声出しあり】恋愛系ゴールの見せ方</a>
+        <a class="link-chip" href="https://youtu.be/el75UkM4MqQ" target="_blank" rel="noopener"><span class="ic yt">▶</span>資料の作り方_黒板_4:3アスペクト比</a>
+        <a class="link-chip" href="https://youtu.be/xA2_ppTyRUo" target="_blank" rel="noopener"><span class="ic yt">▶</span>資料の作り方_PNG保存と背景削除</a>
+        <a class="link-chip" href="https://youtu.be/4QRw09Ng9f0" target="_blank" rel="noopener"><span class="ic yt">▶</span>LP_ページの上下引き伸ばし</a>
+        <a class="link-chip" href="https://youtu.be/2N-9kJp9RXs" target="_blank" rel="noopener"><span class="ic yt">▶</span>サムネイル作成_LP動画リンク埋め込み設定</a>
+        <a class="link-chip" href="https://youtu.be/_byPrzKX3vQ" target="_blank" rel="noopener"><span class="ic yt">▶</span>無料版デザインサイズの変更方法</a>
+      </div>
+
+      <h3 class="block-title">運用代行・スクール運営マインド</h3>
+      <div class="link-grid">
+        <a class="link-chip" href="https://youtu.be/7pAddBbBbp0" target="_blank" rel="noopener"><span class="ic yt">▶</span>TikTok運用代行の誘導方法</a>
+        <a class="link-chip" href="https://youtu.be/Nmp3wo-q-4g" target="_blank" rel="noopener"><span class="ic yt">▶</span>実績ないのにコンサルして良いか？</a>
+        <a class="link-chip" href="https://youtu.be/Yhp7DKSKw8I" target="_blank" rel="noopener"><span class="ic yt">▶</span>高単価商品への罪悪感と中長期の売上</a>
+        <a class="link-chip" href="https://youtu.be/xCpx899YV1A" target="_blank" rel="noopener"><span class="ic yt">▶</span>クーリングオフを事前に防ぐ対策</a>
+        <a class="link-chip" href="https://youtu.be/Zi9i5-PgXjM" target="_blank" rel="noopener"><span class="ic yt">▶</span>クレームのお客様をファンにする方法</a>
+        <a class="link-chip" href="https://youtu.be/iRZwOTDYKuM" target="_blank" rel="noopener"><span class="ic yt">▶</span>スクール資料_参考にして良い範囲</a>
+        <a class="link-chip" href="https://youtu.be/JinZqGLUAOw" target="_blank" rel="noopener"><span class="ic yt">▶</span>スクール資料_編集者権限の注意</a>
+      </div>
+    </section>
+
+    <!-- VIDEOS -->
+    <section class="section" id="videos-sec" data-id="videos">
+      <div class="phase-head">
+        <span class="eyebrow teal">🎬 リソース</span>
+        <h1 class="title">生徒に添削した動画解説一覧</h1>
+        <p class="sub">SAKUMASCHOOL動画講義と比較して、より実践的かつ具体的な内容です。ツール別に整理しています。</p>
+      </div>
+
+      <h3 class="block-title">TikTok</h3>
+      <div class="link-grid">
+        <a class="link-chip" href="https://youtu.be/HOT7ojK1nb0" target="_blank" rel="noopener"><span class="ic yt">▶</span>ログアウト端末リサーチ</a>
+        <a class="link-chip" href="https://youtu.be/3JMQZJkLRJI" target="_blank" rel="noopener"><span class="ic yt">▶</span>音源の目安</a>
+        <a class="link-chip" href="https://youtu.be/YCC8B4w5DtA" target="_blank" rel="noopener"><span class="ic yt">▶</span>他プラットフォームとの投稿タイミング</a>
+        <a class="link-chip" href="https://youtu.be/GhtEuRqcZiQ?si=bePy2b_L95pSl91E" target="_blank" rel="noopener"><span class="ic yt">▶</span>あと一つのハッシュタグ選定方法</a>
+        <a class="link-chip" href="https://youtu.be/PWHNJCriQFc?si=dcDe9Q_uy-SBmZvk" target="_blank" rel="noopener"><span class="ic yt">▶</span>コメント（動画で返信）</a>
+        <a class="link-chip" href="https://youtu.be/UZCnT9z104c" target="_blank" rel="noopener"><span class="ic yt">▶</span>コメント（動画で返信）Ver.2</a>
+        <a class="link-chip" href="https://youtu.be/COk3chIcl3o?si=hnK9yJsw_3u2Db_5" target="_blank" rel="noopener"><span class="ic yt">▶</span>多重ログインキャッシュクリア</a>
+        <a class="link-chip" href="https://youtu.be/svucEm6Y_sI" target="_blank" rel="noopener"><span class="ic yt">▶</span>シニア層のログアウト比率</a>
+        <a class="link-chip" href="https://youtu.be/JiKlYjVKY-k?si=ULD40ui0zUzo_Um6" target="_blank" rel="noopener"><span class="ic yt">▶</span>タイムマネジメント_通知設定</a>
+        <a class="link-chip" href="https://youtu.be/31Zrkr8lxh4?si=ei7d1p0UAo5ZGw3p" target="_blank" rel="noopener"><span class="ic yt">▶</span>機械学習"興味なし"</a>
+        <a class="link-chip" href="https://youtu.be/MTEDKrhNqFY?si=poms4skTSXKBgayN" target="_blank" rel="noopener"><span class="ic yt">▶</span>機械学習_飽和＝時間1/2</a>
+        <a class="link-chip" href="https://youtu.be/0zy6UrRP6vg" target="_blank" rel="noopener"><span class="ic yt">▶</span>インサイトの確認方法</a>
+        <a class="link-chip" href="https://youtu.be/0TdBL0eHno4?si=e4R1TVD-RgmoHKdr" target="_blank" rel="noopener"><span class="ic yt">▶</span>コメント返信タイミング</a>
+        <a class="link-chip" href="https://youtu.be/IQyNF-bbJMo?si=EKTSOTqZ9SzTNDJw" target="_blank" rel="noopener"><span class="ic yt">▶</span>コメントレベル3段階</a>
+        <a class="link-chip" href="https://youtu.be/Lvj0c7pirls" target="_blank" rel="noopener"><span class="ic yt">▶</span>ジャンルの選定推移</a>
+        <a class="link-chip" href="https://youtu.be/jk98O-RRD7s?si=naTaFe2skgpKhPqy" target="_blank" rel="noopener"><span class="ic yt">▶</span>投稿時BGMなどチェック</a>
+        <a class="link-chip" href="https://youtu.be/Wk3wRRBlc0U?si=E1nBYZhuDZPpleyn" target="_blank" rel="noopener"><span class="ic yt">▶</span>フィルターされたコメントのレビュー</a>
+        <a class="link-chip" href="https://youtu.be/ReMpChErPKo?si=I1hFHM_c3_05XX-d" target="_blank" rel="noopener"><span class="ic yt">▶</span>ターゲットリーチまで2日かかる</a>
+        <a class="link-chip" href="https://youtu.be/HcqiwQNTRJQ" target="_blank" rel="noopener"><span class="ic yt">▶</span>投稿後のコメント返信のスピード感</a>
+        <a class="link-chip" href="https://youtu.be/4a3DoFkvkT8" target="_blank" rel="noopener"><span class="ic yt">▶</span>「最後に大公開」戦略</a>
+        <a class="link-chip" href="https://youtu.be/4gX331p9r6A" target="_blank" rel="noopener"><span class="ic yt">▶</span>保存数優遇アルゴリズムを知る方法</a>
+        <a class="link-chip" href="https://youtu.be/6Z4YRyod8qI" target="_blank" rel="noopener"><span class="ic yt">▶</span>再生数=AI／コメント数=視聴者</a>
+        <a class="link-chip" href="https://youtu.be/nnmpVHQOr7M" target="_blank" rel="noopener"><span class="ic yt">▶</span>著作権での注意（サンリオ／ディズニー）</a>
+        <a class="link-chip" href="https://youtu.be/Rq4npcRw5aM" target="_blank" rel="noopener"><span class="ic yt">▶</span>リサーチツール（TTRanking／NoxInfluencer）</a>
+      </div>
+
+      <h3 class="block-title">CapCut</h3>
+      <div class="link-grid">
+        <a class="link-chip" href="https://youtu.be/D7-VypkU6uQ?si=cNsuyW43nidrG9Tq" target="_blank" rel="noopener"><span class="ic yt">▶</span>素材カット方法</a>
+        <a class="link-chip" href="https://youtu.be/kUvT6eNZw9w?si=bEycUb9nZnbV7fpf" target="_blank" rel="noopener"><span class="ic yt">▶</span>速度調整／音声吹き替え</a>
+        <a class="link-chip" href="https://youtu.be/OqvKN4GDyYk?si=KcjXqHdPROxRVOqB" target="_blank" rel="noopener"><span class="ic yt">▶</span>縦文字挿入吹き替えやり方</a>
+        <a class="link-chip" href="https://youtu.be/uF3NVT1OBlo?si=Bg-m_lSmD6743Msh" target="_blank" rel="noopener"><span class="ic yt">▶</span>データ管理</a>
+        <a class="link-chip" href="https://youtube.com/shorts/s73VxK5uQTg?si=zAu03cFhsX_4TSLl" target="_blank" rel="noopener"><span class="ic yt">▶</span>ロゴの消し方</a>
+        <a class="link-chip" href="https://youtube.com/shorts/trEWQZ_8KbU?si=TJ9eG_rBvs_9t_BK" target="_blank" rel="noopener"><span class="ic yt">▶</span>画像挿入</a>
+        <a class="link-chip" href="https://youtu.be/R4ta5zzJW08?si=DU_eIxK0osVUJpcB" target="_blank" rel="noopener"><span class="ic yt">▶</span>円の型取り</a>
+        <a class="link-chip" href="https://youtu.be/-w6VcfAuPlM?si=qvuN7Bk_4YxH4dqI" target="_blank" rel="noopener"><span class="ic yt">▶</span>動画挿入後から尺調整</a>
+        <a class="link-chip" href="https://youtu.be/8jWY1dFFGbw?si=lw1_oOHRYbfonhux" target="_blank" rel="noopener"><span class="ic yt">▶</span>AI音声挿入</a>
+        <a class="link-chip" href="https://youtu.be/Vf35xzA03pA?si=umxegKaK34Kaa3BN" target="_blank" rel="noopener"><span class="ic yt">▶</span>テキスト読み上げ</a>
+        <a class="link-chip" href="https://youtu.be/JKyYuO0q6UA?si=ymg7hfmj73Sghxmp" target="_blank" rel="noopener"><span class="ic yt">▶</span>モザイク処理</a>
+        <a class="link-chip" href="https://youtube.com/shorts/NOiWMIWRaV4?si=XpartcoV7zTWsIdo" target="_blank" rel="noopener"><span class="ic yt">▶</span>スタイル▶テロップ▶背景画像</a>
+        <a class="link-chip" href="https://youtu.be/xRX0UGeCjjE?si=eN_JmP6m81_6oeV0" target="_blank" rel="noopener"><span class="ic yt">▶</span>ズームキーフレーム</a>
+        <a class="link-chip" href="https://youtu.be/KEGlsLrQNSQ?si=sZS5eBEgZ9D6VYJ2" target="_blank" rel="noopener"><span class="ic yt">▶</span>レイヤー</a>
+        <a class="link-chip" href="https://youtu.be/PNeiZwAFB74?si=GgIkCKRnhHBxcfhj" target="_blank" rel="noopener"><span class="ic yt">▶</span>自動キャプション後の調整</a>
+        <a class="link-chip" href="https://youtu.be/rdYKc-ddqLc" target="_blank" rel="noopener"><span class="ic yt">▶</span>自動キャプションエラー対処法</a>
+        <a class="link-chip" href="https://youtu.be/U_1oxDCCuD4?si=7zjB4LbFXKca7xaA" target="_blank" rel="noopener"><span class="ic yt">▶</span>透明度キーフレーム切り替え</a>
+        <a class="link-chip" href="https://youtu.be/UGLtLbEXipA?si=KEeCNYcol7NjfWSC" target="_blank" rel="noopener"><span class="ic yt">▶</span>PC版動作が重い時の対処法</a>
+        <a class="link-chip" href="https://youtu.be/ODV15UHP5Ow?si=0Ya7YJocfZA_gsG6" target="_blank" rel="noopener"><span class="ic yt">▶</span>背景を削除▶自動削除</a>
+        <a class="link-chip" href="https://youtu.be/-XXjqDu4mIE?si=7DUpQOLUvaPQ-Zea" target="_blank" rel="noopener"><span class="ic yt">▶</span>基本使わない方が良い"エフェクト"</a>
+        <a class="link-chip" href="https://youtu.be/pevKfPKjAKY?si=SMjVr0G3c2UitKdE" target="_blank" rel="noopener"><span class="ic yt">▶</span>タイトルのアニメーション時間</a>
+        <a class="link-chip" href="https://youtu.be/o0vQJ5Ykr-U" target="_blank" rel="noopener"><span class="ic yt">▶</span>パソコン版ダウンロード</a>
+        <a class="link-chip" href="https://youtu.be/T26mjJnj_yg" target="_blank" rel="noopener"><span class="ic yt">▶</span>スペース連携①ダビンチリゾルブ</a>
+        <a class="link-chip" href="https://youtu.be/wNNyBm3ICK4" target="_blank" rel="noopener"><span class="ic yt">▶</span>スペース連携②CapCutスペース</a>
+        <a class="link-chip" href="https://youtu.be/28EVtDCIGdE" target="_blank" rel="noopener"><span class="ic yt">▶</span>スペース連携③iPhone or iPad</a>
+        <a class="link-chip" href="https://youtu.be/EJTt3JD1r7I" target="_blank" rel="noopener"><span class="ic yt">▶</span>100MB以上の編集はa14チップでは厳しい</a>
+      </div>
+
+      <h3 class="block-title">動画撮影</h3>
+      <div class="link-grid">
+        <a class="link-chip" href="https://youtu.be/RDma6jMKdYA" target="_blank" rel="noopener"><span class="ic yt">▶</span>ブレない動画撮影方法</a>
+        <a class="link-chip" href="https://youtu.be/FCY5FwQI66o?si=EuGdrup0xu_kTAQd" target="_blank" rel="noopener"><span class="ic yt">▶</span>スローモーション設定</a>
+        <a class="link-chip" href="https://youtu.be/2l53BiokPzY?si=-8h7T5v_yMW9G6KB" target="_blank" rel="noopener"><span class="ic yt">▶</span>外部マイク_マイクチェック</a>
+        <a class="link-chip" href="https://youtu.be/79j-R2hCerA" target="_blank" rel="noopener"><span class="ic yt">▶</span>iPhoneカメラ設定</a>
+        <a class="link-chip" href="https://youtu.be/qZ0DdqD81vE?si=s2asWVZWndVI92p9" target="_blank" rel="noopener"><span class="ic yt">▶</span>撮影時の動き方（立って撮影）</a>
+        <a class="link-chip" href="https://youtu.be/xKjhXpQohls" target="_blank" rel="noopener"><span class="ic yt">▶</span>【お金】最新撮影編</a>
+        <a class="link-chip" href="https://youtu.be/BHjjnsjz5bA" target="_blank" rel="noopener"><span class="ic yt">▶</span>シネマティックモードを使わない理由</a>
+      </div>
+
+      <h3 class="block-title">公式LINE〜Lステップ／Zoom／DaVinci Resolve</h3>
+      <div class="link-grid">
+        <a class="link-chip" href="https://youtu.be/Dp4lvMdinGc?si=VJm8v84YwPjQOaoH" target="_blank" rel="noopener"><span class="ic yt">▶</span>LINE公式アカウント_作成手順</a>
+        <a class="link-chip" href="https://youtu.be/Hlicfm_5C8M?si=-AeAWGtf332f5ANz" target="_blank" rel="noopener"><span class="ic yt">▶</span>LINE公式アカウント_LINEコール設定</a>
+        <a class="link-chip" href="https://youtu.be/Nw1ISd9QtdE" target="_blank" rel="noopener"><span class="ic yt">▶</span>お友達追加時リッチメッセージ</a>
+        <a class="link-chip" href="https://youtu.be/ZarKwRT1UFQ" target="_blank" rel="noopener"><span class="ic yt">▶</span>Lステップ_契約</a>
+        <a class="link-chip" href="https://youtu.be/pXcECqOLcAA" target="_blank" rel="noopener"><span class="ic yt">▶</span>Lステップ_初期設定</a>
+        <a class="link-chip" href="https://youtu.be/IZAN5jOfj5s" target="_blank" rel="noopener"><span class="ic yt">▶</span>Lステップ_リッチメニュー設定</a>
+        <a class="link-chip" href="https://youtu.be/WgRpiGbvFtc" target="_blank" rel="noopener"><span class="ic yt">▶</span>Lステップ_テンプレート作成</a>
+        <a class="link-chip" href="https://youtu.be/ICZvS1UgfVQ" target="_blank" rel="noopener"><span class="ic yt">▶</span>Lステップ_登録時ステップ配信</a>
+        <a class="link-chip" href="https://youtu.be/Y5OCO4dsWNM" target="_blank" rel="noopener"><span class="ic yt">▶</span>Lステップ_タグの振り分け方</a>
+        <a class="link-chip" href="https://youtu.be/7UMU9-bqe1M" target="_blank" rel="noopener"><span class="ic yt">▶</span>Lステップ_カレンダー予約</a>
+        <a class="link-chip" href="https://www.youtube.com/watch?v=c9dpGsk2KPY" target="_blank" rel="noopener"><span class="ic yt">▶</span>Zoomリンク発行設定</a>
+        <a class="link-chip" href="https://youtu.be/lQSTOblWS6A?si=iI6q9FWP2s1NmJVT" target="_blank" rel="noopener"><span class="ic yt">▶</span>Zoomスマホ参加方法</a>
+        <a class="link-chip" href="https://youtu.be/xjQD8hu36FE" target="_blank" rel="noopener"><span class="ic yt">▶</span>ダヴィンチ_ショートカット</a>
+        <a class="link-chip" href="https://youtu.be/sscvnkSKB9k" target="_blank" rel="noopener"><span class="ic yt">▶</span>ダヴィンチ_エディットページ</a>
+        <a class="link-chip" href="https://youtu.be/F_ai3CmlQzo" target="_blank" rel="noopener"><span class="ic yt">▶</span>ダヴィンチ_モノラル設定</a>
+        <a class="link-chip" href="https://youtu.be/KQ75YYxgYNA?si=5RHqA3IZk-bWKd-l" target="_blank" rel="noopener"><span class="ic yt">▶</span>ダヴィンチ_書き出し前後のカラー相違</a>
+      </div>
+
+      <h3 class="block-title">Google Workspace／その他ツール</h3>
+      <div class="link-grid">
+        <a class="link-chip" href="https://youtu.be/-e9JWKtjr_0?si=u4_pWUkMh6OmxxIC" target="_blank" rel="noopener"><span class="ic yt">▶</span>Googleドキュメント_入力と添削</a>
+        <a class="link-chip" href="https://youtube.com/shorts/oAIMSYzhsPg?si=cZecu4rCXOinE3P7" target="_blank" rel="noopener"><span class="ic yt">▶</span>Googleドキュメント_講師への共有方法</a>
+        <a class="link-chip" href="https://youtu.be/sxKLdL7MjYE?si=fsyPMluRQR1fv7rO" target="_blank" rel="noopener"><span class="ic yt">▶</span>Googleドキュメント_フィードバック閲覧</a>
+        <a class="link-chip" href="https://youtu.be/ZGMhccPTvUo?si=fMaSS1tB0LdCHqsP" target="_blank" rel="noopener"><span class="ic yt">▶</span>Googleドキュメント_文字化け対策</a>
+        <a class="link-chip" href="https://youtu.be/Lms91KT8ShA" target="_blank" rel="noopener"><span class="ic yt">▶</span>Googleドキュメント_目次リンク設定</a>
+        <a class="link-chip" href="https://youtu.be/gKmbuYHnHmg" target="_blank" rel="noopener"><span class="ic yt">▶</span>Googleドキュメント_改ページ</a>
+        <a class="link-chip" href="https://youtu.be/rM59xdPZOj8" target="_blank" rel="noopener"><span class="ic yt">▶</span>Googleフォーム_アンケート作成手順</a>
+        <a class="link-chip" href="https://youtu.be/zn5PiKBBOqw" target="_blank" rel="noopener"><span class="ic yt">▶</span>Googleドライブ_1ヶ月経過頃色分け</a>
+        <a class="link-chip" href="https://youtube.com/shorts/VJR87lOWvow?feature=share" target="_blank" rel="noopener"><span class="ic yt">▶</span>TimeRex_zoom連携</a>
+        <a class="link-chip" href="https://youtu.be/1c6S1DxGw8s" target="_blank" rel="noopener"><span class="ic yt">▶</span>TimeRex_時間設定</a>
+        <a class="link-chip" href="https://youtube.com/shorts/qYIdsaoliB4?si=ql1dhHbdk_7uIxZs" target="_blank" rel="noopener"><span class="ic yt">▶</span>YouTubeアップロードand共有方法</a>
+        <a class="link-chip" href="https://youtu.be/eAEdbFNISJM?si=uMPAIHDNO9OYmy8U" target="_blank" rel="noopener"><span class="ic yt">▶</span>YouTube studio共有方法</a>
+        <a class="link-chip" href="https://youtube.com/shorts/dwNEJwyTzyk?feature=share" target="_blank" rel="noopener"><span class="ic yt">▶</span>YouTube画面録画音声バグ対策</a>
+        <a class="link-chip" href="https://youtu.be/fBqLwln85vc?si=VUU5rpbH9DSIDnfK" target="_blank" rel="noopener"><span class="ic yt">▶</span>YouTubeアプリ投稿予約</a>
+        <a class="link-chip" href="https://youtu.be/lHgi1-HHFRE" target="_blank" rel="noopener"><span class="ic yt">▶</span>Vimeo_LP用動画アップロード方法</a>
+        <a class="link-chip" href="https://youtu.be/LMzwOPgbQKU?si=vXSrGW7tIyqbMSbt" target="_blank" rel="noopener"><span class="ic yt">▶</span>Instagram音量レベル調整</a>
+        <a class="link-chip" href="https://youtu.be/L9451gEriso?si=D_hp6ASwxsuQI9cN" target="_blank" rel="noopener"><span class="ic yt">▶</span>代表さくまがInstagramをやらない理由</a>
+        <a class="link-chip" href="https://youtu.be/InK8mwQdrf0" target="_blank" rel="noopener"><span class="ic yt">▶</span>InstagramとTikTokアカウント作成時メールアドレス</a>
+        <a class="link-chip" href="https://youtu.be/ruPlUCeygo8" target="_blank" rel="noopener"><span class="ic yt">▶</span>LINEVOOM申請方法と事務所の選択</a>
+        <a class="link-chip" href="https://youtu.be/WkETM94zisk?si=WLOasuH8i7V3TLwR" target="_blank" rel="noopener"><span class="ic yt">▶</span>ギガファイル便_受け取り手順</a>
+        <a class="link-chip" href="https://youtu.be/NlDk0PVvo64?si=g1ypWNhvczP066nb" target="_blank" rel="noopener"><span class="ic yt">▶</span>ギガファイル便_完成</a>
+        <a class="link-chip" href="https://youtu.be/BzKHza_4wtg?si=VoGcQcpnN6jmtAVK" target="_blank" rel="noopener"><span class="ic yt">▶</span>ギガファイル便_送り方</a>
+        <a class="link-chip" href="https://youtu.be/m0VtCPYMUzA?si=a-YlaCG1H-OXI0Ib" target="_blank" rel="noopener"><span class="ic yt">▶</span>ギガファイル便_音声バグ対策</a>
+      </div>
+
+      <h3 class="block-title">TikTok 広告（法人向け）</h3>
+      <div class="link-grid">
+        <a class="link-chip" href="https://youtu.be/EYjzXmQf2GQ" target="_blank" rel="noopener"><span class="ic yt">▶</span>TikTok for Business_概要</a>
+        <a class="link-chip" href="https://youtu.be/iUntsdddyF8" target="_blank" rel="noopener"><span class="ic yt">▶</span>広告アカウントの開設準備</a>
+        <a class="link-chip" href="https://youtu.be/UkTVujoYN3w" target="_blank" rel="noopener"><span class="ic yt">▶</span>アカウント解説〜リード生成の広告出稿設定</a>
+        <a class="link-chip" href="https://youtu.be/qeDjk6Ljcyc" target="_blank" rel="noopener"><span class="ic yt">▶</span>Spark Ads</a>
+      </div>
+
+      <footer class="page-footer">SAKUMASCHOOL TikTok大全をもとに作成した学習用ハブです。各リンクは元のGoogleドキュメント・Drive・YouTube・Canvaへ遷移します。</footer>
+    </section>
+
+  </main>
+</div>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+  /* ============================================================
+     SUPABASE 接続
+  ============================================================ */
+  const SUPABASE_URL  = 'https://xxlgpzjevsyklqvvwyro.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4bGdwempldnN5a2xxdnZ3eXJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MzAwOTksImV4cCI6MjEwMjAwNjA5OX0.P6iWSWfoEjTdGQVMOA7BsmuqJNZkfRmz0HM_n_Rrxrw';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  /* ============================================================
+     AUTH（パスワード方式）
+     - ログイン：メール＋パスワード（毎回メール送信不要）
+     - 新規登録：メール＋パスワード設定→名前入力→サイトへ
+     - リセット：メールにリンク送信（Resend経由）
+  ============================================================ */
+  const loginOverlay     = document.getElementById('loginOverlay');
+  const loginStep1       = document.getElementById('loginStep1');
+  const loginStep1b      = document.getElementById('loginStep1b');
+  const loginStep1c      = document.getElementById('loginStep1c');
+  const loginStep2       = document.getElementById('loginStep2');
+  const appRoot          = document.getElementById('appRoot');
+  const userEmailLabel   = document.getElementById('userEmailLabel');
+  const logoutBtn        = document.getElementById('logoutBtn');
+
+  // ログイン画面
+  const loginBtn         = document.getElementById('loginBtn');
+  const loginEmail       = document.getElementById('loginEmail');
+  const loginPassword    = document.getElementById('loginPassword');
+  const loginStatus      = document.getElementById('loginStatus');
+  const switchToRegister = document.getElementById('switchToRegister');
+  const switchToReset    = document.getElementById('switchToReset');
+
+  // 新規登録画面
+  const registerBtn             = document.getElementById('registerBtn');
+  const registerEmail           = document.getElementById('registerEmail');
+  const registerPassword        = document.getElementById('registerPassword');
+  const registerPasswordConfirm = document.getElementById('registerPasswordConfirm');
+  const registerStatus          = document.getElementById('registerStatus');
+  const switchToLogin           = document.getElementById('switchToLogin');
+
+  // パスワードリセット画面
+  const resetBtn              = document.getElementById('resetBtn');
+  const resetEmail            = document.getElementById('resetEmail');
+  const resetStatus           = document.getElementById('resetStatus');
+  const switchToLoginFromReset= document.getElementById('switchToLoginFromReset');
+
+  // 名前入力画面
+  const saveNicknameBtn = document.getElementById('saveNicknameBtn');
+  const nicknameInput   = document.getElementById('nicknameInput');
+  const nicknameStatus  = document.getElementById('nicknameStatus');
+
+  let currentUser = null;
+
+  /* -- 画面切り替えヘルパー -- */
+  const updateCard = document.getElementById('loginStep1c-update');
+
+  function showCard(cardId){
+    [loginStep1, loginStep1b, loginStep1c, loginStep2, updateCard].forEach(el => {
+      if(el) el.style.display = el.id === cardId ? 'block' : 'none';
+    });
+  }
+
+  switchToRegister.addEventListener('click', () => showCard('loginStep1b'));
+  switchToReset.addEventListener('click',    () => showCard('loginStep1c'));
+  switchToLogin.addEventListener('click',    () => showCard('loginStep1'));
+  switchToLoginFromReset.addEventListener('click', () => showCard('loginStep1'));
+
+  /* -- パスワード更新（リセットメールから来た時） -- */
+  document.getElementById('updatePasswordBtn').addEventListener('click', async () => {
+    const pass  = document.getElementById('updateNewPassword').value;
+    const pass2 = document.getElementById('updateNewPasswordConfirm').value;
+    const status = document.getElementById('updatePasswordStatus');
+    if(!pass || pass.length < 8){
+      status.style.color = '#E0235E';
+      status.textContent = 'パスワードは8文字以上にしてください';
+      return;
+    }
+    if(pass !== pass2){
+      status.style.color = '#E0235E';
+      status.textContent = 'パスワードが一致しません';
+      return;
+    }
+    const btn = document.getElementById('updatePasswordBtn');
+    btn.disabled = true;
+    btn.textContent = '更新中...';
+    const { error } = await supabase.auth.updateUser({ password: pass });
+    if(error){
+      status.style.color = '#E0235E';
+      status.textContent = 'エラー：' + error.message;
+      btn.disabled = false;
+      btn.textContent = 'パスワードを更新する';
+      return;
+    }
+    status.style.color = '#00867A';
+    status.textContent = 'パスワードを更新しました！ログインしてください。';
+    setTimeout(() => showCard('loginStep1'), 2000);
+  });
+
+  /* -- プロフィール保存 -- */
+  async function saveProfile(user, nickname){
+    await supabase.from('profiles').upsert({
+      user_id: user.id,
+      email: user.email,
+      nickname,
+      updated_at: new Date().toISOString()
+    });
+  }
+
+  function getNickname(user){
+    return user?.user_metadata?.nickname || null;
+  }
+
+  function updateUserLabel(user){
+    const name = getNickname(user);
+    userEmailLabel.textContent = name ? name + ' さん' : user.email;
+  }
+
+  /* -- ログイン成功後の処理 -- */
+  async function setLoggedIn(user){
+    currentUser = user;
+    const now = new Date().toISOString();
+    // ログインのたびにlast_login_atを更新、初回のみjoined_atを設定
+    const { data: existing } = await supabase
+      .from('profiles')
+      .select('joined_at')
+      .eq('user_id', user.id)
+      .single();
+    await supabase.from('profiles').upsert({
+      user_id: user.id,
+      email: user.email,
+      last_login_at: now,
+      joined_at: existing?.joined_at || now, // 初回のみ登録日を設定
+      updated_at: now
+    }, { onConflict: 'user_id', ignoreDuplicates: false });
+
+    const nickname = getNickname(user);
+    if(!nickname){
+      // 初回：名前入力へ
+      loginOverlay.style.display = 'flex';
+      showCard('loginStep2');
+      nicknameInput.focus();
+    } else {
+      // 2回目以降：そのままサイトへ
+      loginOverlay.style.display = 'none';
+      appRoot.classList.remove('locked');
+      updateUserLabel(user);
+      renderProgressUI();
+    }
+  }
+
+  function setLoggedOut(){
+    currentUser = null;
+    loginOverlay.style.display = 'flex';
+    showCard('loginStep1');
+    appRoot.classList.add('locked');
+  }
+
+  /* -- ログイン -- */
+  loginBtn.addEventListener('click', async () => {
+    const email = loginEmail.value.trim();
+    const pass  = loginPassword.value;
+    if(!email || !pass){
+      loginStatus.style.color = '#E0235E';
+      loginStatus.textContent = 'メールアドレスとパスワードを入力してください';
+      return;
+    }
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'ログイン中...';
+    const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+    loginBtn.disabled = false;
+    loginBtn.textContent = 'ログイン';
+    if(error){
+      loginStatus.style.color = '#E0235E';
+      loginStatus.textContent = 'メールアドレスまたはパスワードが違います';
+    }
+  });
+
+  // Enterキーでもログイン
+  [loginEmail, loginPassword].forEach(el => {
+    el.addEventListener('keydown', e => { if(e.key === 'Enter') loginBtn.click(); });
+  });
+
+  /* -- 新規登録 -- */
+  registerBtn.addEventListener('click', async () => {
+    const email = registerEmail.value.trim();
+    const pass  = registerPassword.value;
+    const pass2 = registerPasswordConfirm.value;
+    if(!email || !pass){
+      registerStatus.style.color = '#E0235E';
+      registerStatus.textContent = 'メールアドレスとパスワードを入力してください';
+      return;
+    }
+    if(pass.length < 8){
+      registerStatus.style.color = '#E0235E';
+      registerStatus.textContent = 'パスワードは8文字以上にしてください';
+      return;
+    }
+    if(pass !== pass2){
+      registerStatus.style.color = '#E0235E';
+      registerStatus.textContent = 'パスワードが一致しません';
+      return;
+    }
+    registerBtn.disabled = true;
+    registerBtn.textContent = '登録中...';
+    const { error } = await supabase.auth.signUp({ email, password: pass });
+    registerBtn.disabled = false;
+    registerBtn.textContent = '登録する';
+    if(error){
+      registerStatus.style.color = '#E0235E';
+      registerStatus.textContent = 'エラー：' + error.message;
+    } else {
+      registerStatus.style.color = '#00867A';
+      registerStatus.textContent = '登録しました！そのままログインできます。';
+    }
+  });
+
+  /* -- パスワードリセット -- */
+  resetBtn.addEventListener('click', async () => {
+    const email = resetEmail.value.trim();
+    if(!email){
+      resetStatus.style.color = '#E0235E';
+      resetStatus.textContent = 'メールアドレスを入力してください';
+      return;
+    }
+    resetBtn.disabled = true;
+    resetBtn.textContent = '送信中...';
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname
+    });
+    resetBtn.disabled = false;
+    resetBtn.textContent = 'リセットリンクを送る';
+    if(error){
+      resetStatus.style.color = '#E0235E';
+      resetStatus.textContent = 'エラー：' + error.message;
+    } else {
+      resetStatus.style.color = '#00867A';
+      resetStatus.textContent = 'リセット用メールを送信しました。メールをご確認ください。';
+    }
+  });
+
+  /* -- 名前を保存してサイトへ -- */
+  saveNicknameBtn.addEventListener('click', async () => {
+    const name = nicknameInput.value.trim();
+    if(!name){
+      nicknameStatus.style.color = '#E0235E';
+      nicknameStatus.textContent = '呼び方を入力してください';
+      return;
+    }
+    saveNicknameBtn.disabled = true;
+    saveNicknameBtn.textContent = '保存中...';
+    const { data, error } = await supabase.auth.updateUser({ data: { nickname: name } });
+    if(error){
+      nicknameStatus.style.color = '#E0235E';
+      nicknameStatus.textContent = 'エラー：' + error.message;
+      saveNicknameBtn.disabled = false;
+      saveNicknameBtn.textContent = '決定してスタート 🚀';
+      return;
+    }
+    currentUser = data.user;
+    await saveProfile(currentUser, name);
+    loginOverlay.style.display = 'none';
+    appRoot.classList.remove('locked');
+    updateUserLabel(currentUser);
+    renderProgressUI();
+  });
+
+  /* -- ログアウト -- */
+  logoutBtn.addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    setLoggedOut();
+  });
+
+  /* -- 初期セッション確認 -- */
+  const { data: { session } } = await supabase.auth.getSession();
+  if(session?.user) await setLoggedIn(session.user);
+  else setLoggedOut();
+
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    if(event === 'PASSWORD_RECOVERY'){
+      // パスワードリセットリンクから来た場合 → パスワード更新カードを表示
+      loginOverlay.style.display = 'flex';
+      appRoot.classList.add('locked');
+      showCard('loginStep1c-update');
+    } else if(session?.user){
+      await setLoggedIn(session.user);
+    } else {
+      setLoggedOut();
+    }
+  });
+
+  /* ============================================================
+     PROGRESS TRACKING（Supabase本番接続）
+  ============================================================ */
+
+  // ローカルキャッシュ（DBへのアクセス回数を減らすため）
+  let progressCache = {};
+
+  async function loadAllProgress(){
+    if(!currentUser || currentUser.id === 'dev-user'){
+      // DEVモードはlocalStorageから
+      try{ return JSON.parse(localStorage.getItem('sakuma_progress_dev') || '{}'); }
+      catch(e){ return {}; }
+    }
+    const { data, error } = await supabase
+      .from('progress')
+      .select('item_id, completed')
+      .eq('user_id', currentUser.id);
+    if(error){ console.error(error); return {}; }
+    const map = {};
+    (data || []).forEach(row => { map[row.item_id] = row.completed; });
+    return map;
+  }
+
+  async function saveProgressItem(itemId, completed, title=''){
+    if(!currentUser || currentUser.id === 'dev-user'){
+      const data = JSON.parse(localStorage.getItem('sakuma_progress_dev') || '{}');
+      data[itemId] = completed;
+      localStorage.setItem('sakuma_progress_dev', JSON.stringify(data));
+      progressCache[itemId] = completed;
+      return;
+    }
+    progressCache[itemId] = completed;
+    const { error } = await supabase.from('progress').upsert({
+      user_id: currentUser.id,
+      item_id: itemId,
+      item_type: 'step',
+      completed,
+      title,
+      updated_at: new Date().toISOString()
+    });
+    if(error) console.error('progress save error:', error);
+  }
+
+  async function markVisited(itemId, title=''){
+    if(progressCache['visited:' + itemId]) return; // 既に訪問済みならスキップ
+    if(!currentUser || currentUser.id === 'dev-user'){
+      const data = JSON.parse(localStorage.getItem('sakuma_progress_dev') || '{}');
+      data['visited:' + itemId] = true;
+      localStorage.setItem('sakuma_progress_dev', JSON.stringify(data));
+      progressCache['visited:' + itemId] = true;
+      return;
+    }
+    progressCache['visited:' + itemId] = true;
+    const { error } = await supabase.from('progress').upsert({
+      user_id: currentUser.id,
+      item_id: 'visited:' + itemId,
+      item_type: 'link',
+      completed: true,
+      title,
+      updated_at: new Date().toISOString()
+    });
+    if(error) console.error('visited save error:', error);
+  }
+
+  // --- 安定したID生成（見出しの最初の十数文字だけを使う。文末の言い回しを変えてもIDが変わらない） ---
+  const ID_PREFIX_LEN = 14; // 見出しの先頭何文字をIDの元にするか
+  function hashText(str){
+    let h = 0;
+    for(let i=0;i<str.length;i++){
+      h = (Math.imul(31, h) + str.charCodeAt(i)) | 0;
+    }
+    return (h >>> 0).toString(36); // 常に正の36進数文字列
+  }
+  function normalizeForId(text){
+    // 全角/半角スペース・記号の揺れを軽く吸収してから先頭だけ切り出す
+    return text.replace(/\s+/g,'').slice(0, ID_PREFIX_LEN);
+  }
+  function sectionIdOf(el){
+    const section = el.closest('.section');
+    return section ? (section.dataset.id || section.id) : 'global';
+  }
+  function stableStepId(card){
+    const titleEl = card.querySelector('.step-title');
+    const text = (titleEl ? titleEl.textContent : card.textContent).trim();
+    return 'step:' + sectionIdOf(card) + ':' + hashText(normalizeForId(text));
+  }
+  function stableLinkId(link){
+    const label = link.textContent.replace('訪問済','').trim();
+    return 'link:' + sectionIdOf(link) + ':' + hashText(normalizeForId(label));
+  }
+
+  // --- 各 step-card に完了トグルを注入 ---
+  function injectStepToggles(){
+    const seen = {};
+    document.querySelectorAll('.step-card').forEach((card) => {
+      if(card.querySelector('.complete-toggle')) return;
+      let id = stableStepId(card);
+      seen[id] = (seen[id] || 0) + 1;
+      if(seen[id] > 1) id = id + '-' + seen[id];
+      card.dataset.progressId = id;
+      // タイトルテキストを取得（admin側の表示用）
+      const titleEl = card.querySelector('.step-title');
+      const titleText = (titleEl ? titleEl.textContent : '').trim();
+      const toggle = document.createElement('button');
+      toggle.className = 'complete-toggle';
+      toggle.innerHTML = '✓';
+      toggle.setAttribute('aria-label', '完了にする');
+      toggle.addEventListener('click', () => {
+        const done = !card.classList.contains('is-done');
+        card.classList.toggle('is-done', done);
+        toggle.classList.toggle('done', done);
+        saveProgressItem(id, done, titleText); // タイトルも一緒に保存
+        updateProgressBar();
+      });
+      card.appendChild(toggle);
+    });
+  }
+
+  // --- 各 step-link / link-chip に訪問済バッジを注入 ---
+  function injectVisitedBadges(){
+    const seen = {};
+    document.querySelectorAll('.step-link, .link-chip').forEach((link) => {
+      if(link.querySelector('.visited-badge')) return;
+      let id = stableLinkId(link);
+      seen[id] = (seen[id] || 0) + 1;
+      if(seen[id] > 1) id = id + '-' + seen[id];
+      link.dataset.progressId = id;
+      // ラベルテキストを取得（admin側の表示用）
+      const labelText = link.textContent.replace('訪問済','').trim();
+      const badge = document.createElement('span');
+      badge.className = 'visited-badge';
+      badge.textContent = '訪問済';
+      link.appendChild(badge);
+      link.addEventListener('click', () => {
+        link.classList.add('visited');
+        markVisited(id, labelText); // ラベルも一緒に保存
+      });
+    });
+  }
+
+  // --- 保存済みの状態を画面に反映 ---
+  async function restoreProgressUI(){
+    const data = await loadAllProgress();
+    progressCache = data; // キャッシュを更新
+    document.querySelectorAll('.step-card').forEach(card => {
+      const id = card.dataset.progressId;
+      if(data[id]){
+        card.classList.add('is-done');
+        const t = card.querySelector('.complete-toggle');
+        if(t) t.classList.add('done');
+      }
+    });
+    document.querySelectorAll('.step-link, .link-chip').forEach(link => {
+      const id = link.dataset.progressId;
+      if(data['visited:' + id]){
+        link.classList.add('visited');
+      }
+    });
+    updateProgressBar();
+  }
+
+  function updateProgressBar(){
+    const cards = document.querySelectorAll('.step-card');
+    const total = cards.length;
+    const done = document.querySelectorAll('.step-card.is-done').length;
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    const fill = document.getElementById('progressFill');
+    const label = document.getElementById('progressLabel');
+    if(fill) fill.style.setProperty('--pct', pct + '%');
+    if(label) label.textContent = done + ' / ' + total + ' ステップ完了';
+  }
+
+  async function renderProgressUI(){
+    injectStepToggles();
+    injectVisitedBadges();
+    await restoreProgressUI();
+  }
+
+  /* ============================================================
+     NAVIGATION (既存)
+  ============================================================ */
+  const navItems = document.querySelectorAll('.navitem, .home-card');
+  const sections = document.querySelectorAll('.section');
+  const sidebar = document.getElementById('sidebar');
+  const burger = document.getElementById('burgerBtn');
+
+  function showSection(id){
+    sections.forEach(s => {
+      const sid = s.dataset.id || s.id;
+      s.classList.toggle('active', sid === id);
+    });
+    document.querySelectorAll('.navitem').forEach(n => {
+      n.classList.toggle('active', n.dataset.target === id);
+    });
+    window.scrollTo({top:0, behavior:'instant'});
+    sidebar.classList.remove('open');
+  }
+
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const target = item.dataset.target;
+      if(target) showSection(target);
+    });
+  });
+
+  burger.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+  });
+</script>
+</body>
+</html>
