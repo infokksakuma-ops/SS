@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>営業図鑑 | 株式会社佐久間 育成ロードマップ</title>
+<style>
+  :root{
+    --cream:#FFF8E7;
+    --navy:#1E2A4A;
+    --navy-deep:#13192E;
+    --crimson:#D7263D;
+    --crimson-deep:#A11A2B;
+    --gold:#FFC94A;
+    --green:#3FB66B;
+    --line:#E7DFC8;
+    --ink:#1E2A4A;
+    --paper:#FFFDF6;
+    font-size:16px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:"Hiragino Sans","Yu Gothic",sans-serif;
+    line-height:1.7;
+  }
+  h1,h2,h3,.disp{
+    font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
+    font-weight:700;
+    letter-spacing:.02em;
+  }
+  .stat{
+    font-family:"SFMono-Regular",Consolas,monospace;
+    letter-spacing:.04em;
+  }
+  a{color:inherit;}
+
+  /* ===== layout ===== */
+  .shell{display:grid;grid-template-columns:248px 1fr;min-height:100vh;}
+  @media(max-width:880px){.shell{grid-template-columns:1fr;}.side{position:static;}}
+
+  .side{
+    background:var(--navy-deep);
+    color:var(--cream);
+    padding:28px 20px;
+    position:sticky;top:0;height:100vh;overflow-y:auto;
+  }
+  .side .brand{font-size:.78rem;opacity:.6;margin-bottom:2px;}
+  .side .brand-main{font-size:1.25rem;margin-bottom:26px;}
+  .side nav a{
+    display:flex;gap:10px;align-items:center;
+    padding:9px 10px;border-radius:8px;
+    font-size:.86rem;color:#D9DCE8;text-decoration:none;
+    margin-bottom:2px;
+  }
+  .side nav a:hover{background:rgba(255,255,255,.08);color:#fff;}
+  .side nav .grp{font-size:.7rem;opacity:.45;margin:18px 4px 6px;text-transform:uppercase;letter-spacing:.1em;}
+  .badge{
+    width:22px;height:22px;border-radius:50%;display:inline-flex;
+    align-items:center;justify-content:center;font-size:.68rem;
+    background:var(--crimson);color:#fff;flex-shrink:0;
+  }
+
+  main{padding:0;}
+
+  /* ===== hero ===== */
+  .hero{
+    background:
+      radial-gradient(circle at 85% -10%, rgba(255,201,74,.35), transparent 45%),
+      linear-gradient(160deg, var(--crimson) 0%, var(--crimson-deep) 55%, var(--navy-deep) 100%);
+    color:var(--cream);padding:64px 48px 56px;position:relative;overflow:hidden;
+  }
+  .hero::after{
+    content:"";position:absolute;right:-60px;bottom:-90px;width:320px;height:320px;
+    border-radius:50%;border:3px solid rgba(255,255,255,.15);
+  }
+  .hero::before{
+    content:"";position:absolute;right:20px;bottom:-40px;width:200px;height:200px;
+    border-radius:50%;border:3px solid rgba(255,255,255,.12);
+  }
+  .eyebrow{font-size:.78rem;letter-spacing:.18em;opacity:.75;margin-bottom:14px;}
+  .hero h1{font-size:clamp(1.8rem,4vw,2.8rem);margin:0 0 16px;max-width:720px;color:#fff;}
+  .hero p{max-width:560px;opacity:.88;font-size:.98rem;margin:0 0 28px;}
+  .hero-stats{display:flex;gap:34px;flex-wrap:wrap;}
+  .hero-stats div{}
+  .hero-stats .num{font-size:1.9rem;font-weight:700;}
+  .hero-stats .lab{font-size:.74rem;opacity:.7;}
+
+  /* ===== evolution chain ===== */
+  .evo-wrap{padding:40px 48px 10px;}
+  .evo-title{font-size:1rem;margin-bottom:4px;}
+  .evo-sub{font-size:.82rem;opacity:.65;margin-bottom:22px;}
+  .evo-chain{
+    display:flex;align-items:center;gap:0;overflow-x:auto;padding-bottom:10px;
+  }
+  .evo-node{
+    flex:0 0 auto;width:128px;text-align:center;
+  }
+  .evo-mon{
+    width:74px;height:74px;border-radius:50%;margin:0 auto 8px;
+    background:var(--paper);border:3px solid var(--navy);
+    display:flex;align-items:center;justify-content:center;font-size:1.5rem;
+    box-shadow:0 3px 0 var(--navy);
+  }
+  .evo-node.locked .evo-mon{opacity:.35;border-style:dashed;box-shadow:none;}
+  .evo-node .nm{font-size:.78rem;font-weight:700;}
+  .evo-node .role{font-size:.66rem;opacity:.6;}
+  .evo-arrow{flex:0 0 auto;width:34px;text-align:center;color:var(--crimson);font-size:1.1rem;}
+
+  /* ===== section ===== */
+  section.chapter{padding:38px 48px;border-top:1px solid var(--line);scroll-margin-top:20px;}
+  .chap-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:22px;}
+  .chap-num{
+    flex:0 0 auto;width:46px;height:46px;border-radius:10px;
+    background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-family:monospace;font-size:1rem;
+  }
+  .chap-head h2{margin:0 0 4px;font-size:1.35rem;}
+  .chap-head .desc{font-size:.86rem;opacity:.7;max-width:640px;}
+
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;}
+  .card{
+    background:var(--paper);border:1px solid var(--line);border-radius:12px;
+    padding:18px;position:relative;
+  }
+  .card .type{
+    display:inline-block;font-size:.66rem;font-weight:700;padding:3px 9px;border-radius:999px;
+    margin-bottom:10px;letter-spacing:.04em;
+  }
+  .type.hear{background:#E6F4FF;color:#1A6FB0;}
+  .type.close{background:#FFEAEA;color:var(--crimson-deep);}
+  .type.heart{background:#FFF3DA;color:#9A6B00;}
+  .type.guard{background:#E8F8EE;color:#1F7A45;}
+  .card h3{margin:0 0 6px;font-size:1rem;}
+  .card p{margin:0;font-size:.85rem;opacity:.78;}
+
+  /* ===== 2択ツリー ===== */
+  .tree{
+    background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:24px;
+  }
+  .tree-q{
+    background:var(--navy);color:#fff;border-radius:10px;padding:12px 16px;
+    font-size:.9rem;font-weight:700;display:inline-block;margin-bottom:14px;
+  }
+  .branch{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  @media(max-width:600px){.branch{grid-template-columns:1fr;}}
+  .opt{
+    border:2px solid var(--line);border-radius:10px;padding:12px 14px;font-size:.85rem;
+  }
+  .opt.yes{border-color:var(--green);background:#F2FBF5;}
+  .opt.no{border-color:var(--crimson);background:#FFF4F4;}
+  .opt .tag{font-weight:700;font-size:.72rem;margin-bottom:4px;display:block;}
+  .opt.yes .tag{color:var(--green);}
+  .opt.no .tag{color:var(--crimson);}
+
+  /* ===== タイプ相性表(アウト返し) ===== */
+  .matchup{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;}
+  .mu-card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px;}
+  .mu-card .weak{font-size:.74rem;color:var(--crimson-deep);font-weight:700;margin-bottom:6px;}
+  .mu-card .move{font-size:.83rem;}
+
+  /* ===== ランク表 ===== */
+  table.ranktbl{width:100%;border-collapse:collapse;font-size:.85rem;background:var(--paper);border-radius:12px;overflow:hidden;}
+  table.ranktbl th,table.ranktbl td{padding:11px 14px;border-bottom:1px solid var(--line);text-align:left;}
+  table.ranktbl th{background:var(--navy);color:#fff;font-weight:700;font-size:.78rem;}
+  table.ranktbl tr:last-child td{border-bottom:none;}
+
+  .rule-box{
+    background:var(--navy-deep);color:var(--cream);border-radius:14px;padding:24px;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;
+  }
+  .rule-box .r{font-size:.85rem;}
+  .rule-box .r b{color:var(--gold);display:block;margin-bottom:4px;font-size:.9rem;}
+
+  footer{padding:30px 48px 60px;font-size:.78rem;opacity:.55;}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ===== SIDE NAV ===== -->
+  <aside class="side">
+    <div class="brand">SAKUMA SALES LAB</div>
+    <div class="brand-main disp">営業図鑑</div>
+    <nav>
+      <div class="grp">はじめに</div>
+      <a href="#hero"><span class="badge">★</span>図鑑トップ</a>
+      <a href="#evo"><span class="badge">0</span>進化ロード</a>
+      <div class="grp">基礎</div>
+      <a href="#ch1"><span class="badge">1</span>マインド</a>
+      <a href="#ch2"><span class="badge">2</span>商材図鑑</a>
+      <div class="grp">わざ(2択営業法)</div>
+      <a href="#ch3"><span class="badge">3</span>2択ヒアリング</a>
+      <a href="#ch4"><span class="badge">4</span>2択クロージング</a>
+      <a href="#ch5"><span class="badge">5</span>アウト返しタイプ相性</a>
+      <div class="grp">育成</div>
+      <a href="#ch6"><span class="badge">6</span>正々堂々ルール</a>
+      <a href="#ch7"><span class="badge">7</span>レベルアップ基準</a>
+    </nav>
+  </aside>
+
+  <main>
+    <!-- ===== HERO ===== -->
+    <section class="hero" id="hero">
+      <div class="eyebrow">SAKUMA SALES LAB ／ 育成図鑑 ver.1</div>
+      <h1 class="disp">未経験でも、遠隔でも。<br>誰でも"育てて"いける営業図鑑。</h1>
+      <p>覚えるトークは台本まる暗記じゃなく「2択」。今どっちに進むかだけ選べば、迷わずレベルアップしていける仕組みです。東京にいなくても、加盟店でも、入りたてでも進め方は同じ。</p>
+      <div class="hero-stats">
+        <div><div class="num">7</div><div class="lab">章だてロードマップ</div></div>
+        <div><div class="num">6</div><div class="lab">進化段階(ランク)</div></div>
+        <div><div class="num">2択</div><div class="lab">だけで進む営業法</div></div>
+      </div>
+    </section>
+
+    <!-- ===== 進化チェーン ===== -->
+    <div class="evo-wrap" id="evo">
+      <div class="evo-title disp">あなたの進化ロード</div>
+      <div class="evo-sub">コール → アポ → 商談 → 受注 を重ねるごとに、次の姿へ進化していきます。</div>
+      <div class="evo-chain">
+        <div class="evo-node"><div class="evo-mon">🥚</div><div class="nm">タマゴ</div><div class="role">アポインター</div></div>
+        <div class="evo-arrow">→</div>
+        <div class="evo-node"><div class="evo-mon">🌱</div><div class="nm">めばえ</div><div class="role">クローザー</div></div>
+        <div class="evo-arrow">→</div>
+        <div class="evo-node"><div class="evo-mon">🔥</div><div class="nm">ひのこ</div><div class="role">サブクローザー</div></div>
+        <div class="evo-arrow">→</div>
+        <div class="evo-node locked"><div class="evo-mon">⚡</div><div class="nm">いかずち</div><div class="role">チーフ</div></div>
+        <div class="evo-arrow">→</div>
+        <div class="evo-node locked"><div class="evo-mon">🛡️</div><div class="nm">まもりて</div><div class="role">サブマネージャー</div></div>
+        <div class="evo-arrow">→</div>
+        <div class="evo-node locked"><div class="evo-mon">👑</div><div class="nm">かしら</div><div class="role">マネージャー</div></div>
+      </div>
+    </div>
+
+    <!-- ===== 1. マインド ===== -->
+    <section class="chapter" id="ch1">
+      <div class="chap-head">
+        <div class="chap-num">01</div>
+        <div><h2>マインド研修：最初に必ず確認</h2><div class="desc">トークを覚える前に、ここだけは全員共通で持っておく考え方です。</div></div>
+      </div>
+      <div class="card-grid">
+        <div class="card"><span class="type heart">こころ</span><h3>営業マンと販売員は別もの</h3><p>商品力で売るのが販売員。商品力に"人柄"を乗せてワクワクさせるのが営業マンの仕事。まず自分が「これ欲しい」と思えるかが第一目標。</p></div>
+        <div class="card"><span class="type heart">こころ</span><h3>元気さは今日から再現できる</h3><p>知識や経験は一朝一夕では身につかないが、「元気」と「ポジティブ」は今すぐ再現できる。声のトーン・表情・反応速度から鍛える。</p></div>
+        <div class="card"><span class="type heart">こころ</span><h3>断られてもログを取る</h3><p>受注がゴールではなく、振り返りがレベルアップの経験値。ロープレ・実録音を聞き返す習慣をつける。</p></div>
+      </div>
+    </section>
+
+    <!-- ===== 2. 商材図鑑 ===== -->
+    <section class="chapter" id="ch2">
+      <div class="chap-head">
+        <div class="chap-num">02</div>
+        <div><h2>商材図鑑：何を扱っているか</h2><div class="desc">扱う商材を「タイプ」として整理。相手の業種・悩みに合わせて出す技を変えます。</div></div>
+      </div>
+      <div class="card-grid">
+        <div class="card"><span class="type guard">MAPタイプ</span><h3>MEO対策</h3><p>Googleマップでの表示順位を上げる。口コミ・投稿・店舗情報の3点を運用代行。</p></div>
+        <div class="card"><span class="type guard">えいぞうタイプ</span><h3>AI動画広告</h3><p>YouTube上でエリア・年代・キーワードを絞って配信する店舗CM動画。</p></div>
+        <div class="card"><span class="type guard">ひとタイプ</span><h3>特定技能人材紹介</h3><p>海外の日本語学校と提携した外国人材の紹介。定着率の高さが強み。</p></div>
+      </div>
+    </section>
+
+    <!-- ===== 3. 2択ヒアリング ===== -->
+    <section class="chapter" id="ch3">
+      <div class="chap-head">
+        <div class="chap-num">03</div>
+        <div><h2>わざ：2択ヒアリング術</h2><div class="desc">「何を聞けばいいか分からない」をなくすため、すべての質問をYES/NOの2択に変換。答えに応じて次の一手が自動で決まります。</div></div>
+      </div>
+      <div class="tree">
+        <div class="tree-q">Q1. 今のお店の集客、増やしたいと思いますか？</div>
+        <div class="branch">
+          <div class="opt yes"><span class="tag">YES</span>どれくらい増えたら嬉しいか、具体的な人数・金額を聞く → Q2へ</div>
+          <div class="opt no"><span class="tag">NO</span>なぜ十分だと感じているか理由を聞く → 現状の広告費・満足度を深掘り</div>
+        </div>
+        <div class="tree-q">Q2. 今、月々の広告費がいくらか把握していますか？</div>
+        <div class="branch">
+          <div class="opt yes"><span class="tag">YES</span>その金額と効果(費用対効果)を一緒に確認 → クロージングへ</div>
+          <div class="opt no"><span class="tag">NO</span>一緒に概算を出すところから商談をスタート</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 4. 2択クロージング ===== -->
+    <section class="chapter" id="ch4">
+      <div class="chap-head">
+        <div class="chap-num">04</div>
+        <div><h2>わざ：2択クロージング術</h2><div class="desc">最後の一押しも、相手の反応を2つに分けてどちらに転んでも次に進める設計にします。</div></div>
+      </div>
+      <div class="tree">
+        <div class="tree-q">提案後「いかがですか？」への反応</div>
+        <div class="branch">
+          <div class="opt yes"><span class="tag">前向き</span>「いいですね」「考えてみます」→ 何が決め手になりそうか、即・具体的に確認</div>
+          <div class="opt no"><span class="tag">慎重</span>「ちょっと…」「高い気がする」→ 不安の正体を一緒に言語化(値段／効果／タイミングのどれか)</div>
+        </div>
+        <div class="tree-q">不安の正体が分かったら</div>
+        <div class="branch">
+          <div class="opt yes"><span class="tag">値段</span>費用対効果を月の見込み件数で再計算して見せる</div>
+          <div class="opt no"><span class="tag">効果・タイミング</span>事例・実績データを見せて、開始時期のメリットを説明</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 5. アウト返しタイプ相性 ===== -->
+    <section class="chapter" id="ch5">
+      <div class="chap-head">
+        <div class="chap-num">05</div>
+        <div><h2>アウト返し：タイプ相性表</h2><div class="desc">よく出る "弱点をつかれる" パターンを先回りで把握。ポケモンのタイプ相性のように、効く返し方を一覧化。</div></div>
+      </div>
+      <div class="matchup">
+        <div class="mu-card"><div class="weak">⚠ 相談したい</div><div class="move">何を確認したいのか具体的に聞き、その場で一緒に整理する。「相談する必要があるくらい興味があるんですね」と前向きに転換。</div></div>
+        <div class="mu-card"><div class="weak">⚠ 予算が厳しい</div><div class="move">いくらなら出せるかではなく、なぜその金額なのかを聞く。月あたりの負担感で再計算して見せる。</div></div>
+        <div class="mu-card"><div class="weak">⚠ 他社と比較したい</div><div class="move">比較は歓迎した上で、判断基準(何を一番重視するか)を先に明確にしておく。</div></div>
+        <div class="mu-card"><div class="weak">⚠ 自分でできそう</div><div class="move">実際にかかる時間・手間を一緒に試算し、代行のメリットを数字で見せる。</div></div>
+      </div>
+    </section>
+
+    <!-- ===== 6. 正々堂々ルール ===== -->
+    <section class="chapter" id="ch6">
+      <div class="chap-head">
+        <div class="chap-num">06</div>
+        <div><h2>正々堂々ルール：稼ぎ"続ける"ための約束</h2><div class="desc">短期の受注より、信頼の積み重ねが長く稼げる人材をつくります。これは全ランク共通の絶対ルール。</div></div>
+      </div>
+      <div class="rule-box">
+        <div class="r"><b>名乗りは正直に</b>自社名・自分の用件を最初にはっきり伝える。別の会社名や公的機関を装った名乗りはしない。</div>
+        <div class="r"><b>契約条件は聞かれる前に</b>契約期間・総額・解約条件は、聞かれてから答えるのではなく自分から先に伝える。</div>
+        <div class="r"><b>不安は煽らず、聞く</b>「今だけ」「枠が無くなる」より先に、相手が本当に迷っている理由を聞く。</div>
+        <div class="r"><b>断りは気持ちよく受ける</b>NOをもらった時こそ、次に繋がる印象を残す。無理な誘導は将来のクレームになる。</div>
+      </div>
+    </section>
+
+    <!-- ===== 7. ランク表 ===== -->
+    <section class="chapter" id="ch7">
+      <div class="chap-head">
+        <div class="chap-num">07</div>
+        <div><h2>レベルアップ基準</h2><div class="desc">次の進化に必要な"経験値"の目安です。コール数だけでなく、ヒアリング・クロージングの質も加点対象に。</div></div>
+      </div>
+      <table class="ranktbl">
+        <tr><th>進化段階</th><th>主な役割</th><th>レベルアップ目安</th></tr>
+        <tr><td>🥚 タマゴ（アポインター）</td><td>テレアポでアポを獲得</td><td>2択ヒアリングを止まらず使えるようになる</td></tr>
+        <tr><td>🌱 めばえ（クローザー）</td><td>商談・クロージング</td><td>アウト返しタイプ相性を自分の言葉で言える</td></tr>
+        <tr><td>🔥 ひのこ（サブクローザー）</td><td>新人のロープレ相手</td><td>正々堂々ルールを体現し、安定した受注率</td></tr>
+        <tr><td>⚡ いかずち（チーフ）</td><td>チームの数字管理</td><td>後輩の2択ツリーをカスタマイズできる</td></tr>
+        <tr><td>🛡️ まもりて（サブマネージャー）</td><td>育成・研修設計</td><td>新人を1人前に育てた実績</td></tr>
+        <tr><td>👑 かしら（マネージャー）</td><td>事業部の全体最適</td><td>図鑑そのものを更新・改善していく</td></tr>
+      </table>
+    </section>
+
+    <footer>
+      © 株式会社佐久間 営業図鑑 ver.1 ／ 社内育成用ハブ。内容は実運用に合わせて随時アップデートしてください。
+    </footer>
+  </main>
+</div>
+</body>
+</html>
