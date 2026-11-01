@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F2A900">
+<title>台本自動クン - SAKUMASCHOOL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-text-size-adjust:100%}
+body{font-family:'Zen Maru Gothic',"Hiragino Sans",sans-serif;background:#FFF9E9;color:#1C1C1C;line-height:1.75;padding-bottom:env(safe-area-inset-bottom)}
+.wrap{max-width:1060px;margin:0 auto;padding:0 16px 60px}
+.hero{position:relative;text-align:center;padding:36px 0 16px;}
+.hero-char{width:130px;position:absolute;top:-4px;right:2px;transform:rotate(4deg);filter:drop-shadow(4px 6px 0 rgba(0,0,0,.15));}
+.badge{display:inline-block;background:#1C1C1C;color:#F2A900;font-size:13px;font-weight:700;padding:6px 18px;border-radius:20px}
+.hero h1{font-size:34px;font-weight:900;margin-top:14px}
+.hero p{color:#6B6555;font-size:14px;font-weight:700;margin-top:4px}
+.tabs{display:flex;gap:8px;margin-bottom:18px;background:#FFF3D6;padding:6px;border-radius:14px;border:2px solid #1C1C1C}
+.tab{flex:1;text-align:center;padding:12px 8px;border-radius:9px;font-size:15px;font-weight:900;cursor:pointer;color:#6B6555;transition:.15s;user-select:none}
+.tab.on{background:#1C1C1C;color:#F2A900}
+.card{background:#fff;border:3px solid #1C1C1C;border-radius:16px;padding:22px;box-shadow:5px 5px 0 #1C1C1C;margin-bottom:18px}
+label{display:block;font-weight:900;font-size:15px;margin-bottom:9px}
+textarea{width:100%;min-height:240px;padding:14px;border:2px solid #1C1C1C;border-radius:10px;font-size:16px;line-height:1.85;font-family:inherit;resize:vertical;background:#FFF9E9}
+textarea:focus{outline:3px solid #FF6B35}
+.row{display:flex;gap:10px;align-items:center;margin-top:13px;flex-wrap:wrap}
+button{background:#FF6B35;color:#fff;border:3px solid #1C1C1C;padding:14px 28px;border-radius:10px;font-size:16px;font-weight:900;cursor:pointer;font-family:inherit;box-shadow:4px 4px 0 #1C1C1C;-webkit-tap-highlight-color:transparent}
+button:active{transform:translate(2px,2px);box-shadow:2px 2px 0 #1C1C1C}
+button.ghost{background:#fff;color:#1C1C1C;box-shadow:3px 3px 0 #1C1C1C}
+.hint{color:#6B6555;font-size:13px;font-weight:700}
+.score-head{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.score-num{font-size:64px;font-weight:900;line-height:1;color:#FF6B35}
+.score-num span.d{font-size:20px;color:#6B6555}
+.rank{font-size:20px;font-weight:900}
+.rank-sub{color:#6B6555;font-size:13.5px;margin-top:2px;font-weight:700}
+.bars{margin-top:22px;display:grid;gap:13px}
+.bar-row{display:grid;grid-template-columns:135px 1fr 50px;gap:10px;align-items:center}
+.bar-label{font-size:13px;font-weight:900}
+.bar-track{background:#FFF3D6;height:12px;border-radius:6px;overflow:hidden;border:2px solid #1C1C1C}
+.bar-fill{height:100%;border-radius:6px;transition:width .5s ease}
+.bar-val{font-size:12.5px;font-weight:900;text-align:right;color:#6B6555}
+h2.sec{font-size:19px;font-weight:900;margin:4px 0 14px;padding-bottom:9px;border-bottom:3px solid #1C1C1C;display:flex;align-items:center;gap:8px}
+h2.sec::before{content:"";width:8px;height:18px;background:#FF6B35;border-radius:2px;display:inline-block}
+.item{border-left:5px solid #FFF3D6;padding:11px 0 11px 14px;margin-bottom:14px;border-radius:0 8px 8px 0}
+.item.bad{border-color:#E8433A;background:#FDEDEC}
+.item.warn{border-color:#F2A900;background:#FFF6E0}
+.item.good{border-color:#2E9E5B;background:#EAF7EF}
+.item .tag{display:inline-block;font-size:11px;font-weight:900;padding:3px 10px;border-radius:20px;color:#fff;margin-bottom:5px}
+.tag.bad{background:#E8433A}.tag.warn{background:#F2A900}.tag.good{background:#2E9E5B}
+.item h4{font-size:15px;font-weight:900;margin-bottom:4px}
+.item p{font-size:14px;color:#3c4453}
+.item .fix{margin-top:7px;font-size:13.5px;background:#fff;border:2px dashed #C7860A;border-radius:8px;padding:9px 11px}
+.item .fix b{color:#FF6B35}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.stat{background:#FFF3D6;border:2px solid #1C1C1C;border-radius:10px;padding:12px 14px;text-align:center}
+.stat .k{font-size:12px;color:#6B6555;font-weight:700}
+.stat .v{font-size:22px;font-weight:900;margin-top:2px;color:#FF6B35}
+.step{display:grid;grid-template-columns:34px 1fr;gap:12px;margin-bottom:16px;align-items:start}
+.step .n{background:#1C1C1C;color:#F2A900;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px}
+.step .t{font-weight:900;font-size:15.5px;margin-bottom:3px}
+.step .d{font-size:14px;color:#3c4453}
+.ax{border:2px solid #1C1C1C;border-radius:12px;padding:15px;margin-bottom:12px}
+.ax .hd{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:7px;flex-wrap:wrap}
+.ax .nm{font-weight:900;font-size:15.5px}
+.ax .pt{font-size:12.5px;font-weight:900;color:#fff;background:#1C1C1C;padding:3px 12px;border-radius:20px}
+.ax p{font-size:14px;color:#3c4453}
+.ax ul{margin:8px 0 0 18px;font-size:13.5px;color:#48505e}
+.ax li{margin-bottom:3px}
+.note{background:#FFF3D6;border:2px dashed #C7860A;border-radius:10px;padding:12px 14px;font-size:13.5px;color:#333;margin-top:10px}
+.range{display:grid;gap:8px}
+.range div{display:grid;grid-template-columns:96px 1fr;gap:10px;font-size:14px;align-items:center;font-weight:700}
+.weapon{display:grid;grid-template-columns:56px 1fr;gap:14px;align-items:start;background:#FFF3D6;border:2px solid #1C1C1C;border-radius:12px;padding:16px;margin-bottom:14px}
+.weapon .ico{width:56px;height:56px;background:#FF6B35;border:3px solid #1C1C1C;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:#fff}
+.weapon h4{font-size:16px;font-weight:900;margin-bottom:5px}
+.weapon p{font-size:13.5px;color:#3c4453;margin-bottom:6px}
+.weapon .flow{font-size:12.5px;color:#6B6555;font-weight:700;background:#fff;border-radius:6px;padding:6px 10px;display:inline-block}
+.char-bubble{display:flex;align-items:flex-end;gap:14px;margin-top:16px}
+.char-bubble img{width:70px;flex-shrink:0;filter:drop-shadow(2px 3px 0 rgba(0,0,0,.15))}
+.bubble{background:#fff;border:3px solid #1C1C1C;border-radius:14px 14px 14px 2px;padding:12px 16px;font-size:13.5px;font-weight:700;box-shadow:3px 3px 0 #1C1C1C;flex:1}
+footer{text-align:center;color:#6B6555;font-size:12px;margin-top:26px;line-height:1.85;font-weight:700}
+#page-help{display:none}
+@media(max-width:640px){
+ .wrap{padding:0 12px 50px}
+ .hero h1{font-size:24px}
+ .hero-char{width:90px}
+ .card{padding:16px;border-radius:12px}
+ .tab{font-size:14px;padding:11px 4px}
+ textarea{min-height:200px;font-size:16px;padding:12px}
+ button{width:100%;padding:15px}
+ button.ghost{width:auto;flex:1}
+ .score-num{font-size:52px}
+ .bar-row{grid-template-columns:98px 1fr 44px;gap:8px}
+ .stats{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+  <img class="hero-char" src="assets/logmaru_pc.png" alt="ログ丸くん">
+  <span class="badge">SAKUMASCHOOL 公式ツール</span>
+  <h1>台本自動クン</h1>
+  <p>台本を貼るだけで、伸びない原因をぶった斬る</p>
+</div>
+
+<div class="tabs">
+  <div class="tab on" id="tb-main">診断する</div>
+  <div class="tab" id="tb-help">台本のコツ</div>
+</div>
+
+<div id="page-main">
+  <div class="card">
+    <div class="step"><div class="n">1</div><div><div class="t">台本を貼る</div><div class="d">動画1本分の台本を、そのまま全部貼り付けます。100文字以上で診断できます。</div></div></div>
+    <div class="step"><div class="n">2</div><div><div class="t">診断するを押す</div><div class="d">すぐに結果が出ます。</div></div></div>
+    <div class="step" style="margin-bottom:0;"><div class="n">3</div><div><div class="t">指摘された箇所を直す</div><div class="d">「要修正」から順に直してください。直したらもう一度診断して、85点以上になるまで繰り返すのがベストです。</div></div></div>
+  </div>
+
+  <div class="card">
+    <label for="src">台本を貼り付けてください</label>
+    <textarea id="src" placeholder="ここに台本の全文を貼り付けます（100文字以上）"></textarea>
+    <div class="row">
+      <button id="run">診断する</button>
+      <button id="clr" class="ghost">クリア</button>
+      <span class="hint" id="cnt">0文字</span>
+    </div>
+  </div>
+
+  <div id="result" style="display:none">
+    <div class="card">
+      <div class="score-head">
+        <div class="score-num"><span id="sc">0</span><span class="d">/100</span></div>
+        <div><div class="rank" id="rk"></div><div class="rank-sub" id="rksub"></div></div>
+      </div>
+      <div class="bars" id="bars"></div>
+      <div class="char-bubble">
+        <img src="assets/logmaru_shout.png" alt="ログ丸くん">
+        <div class="bubble" id="charComment">台本、貼ったら僕がすぐ診断します。</div>
+      </div>
+    </div>
+    <div class="card"><h2 class="sec">改善すべき点</h2><div id="issues"></div></div>
+    <div class="card"><h2 class="sec">できている点</h2><div id="goods"></div></div>
+    <div class="card"><h2 class="sec">台本データ</h2><div class="stats" id="stats"></div></div>
+  </div>
+</div>
+
+<div id="page-help">
+  <div class="card">
+    <h2 class="sec">診断される5つの軸</h2>
+    <div class="ax"><div class="hd"><span class="nm">① 冒頭の引き</span><span class="pt">30点</span></div>
+      <p>最初の数秒で見る理由を作れなければ、そこで終わりです。配点を一番高くしているのはそのためです。</p>
+      <ul><li>数字があるか</li><li>続きが気になる仕掛けがあるか</li><li>1行目がダラダラ長くないか</li><li>いらない挨拶で入っていないか</li></ul>
+    </div>
+    <div class="ax"><div class="hd"><span class="nm">② 独自の判断</span><span class="pt">25点</span></div>
+      <p>情報を並べるだけなら、僕じゃなくてもできます。あなた自身の意見・立場が出ているかをここで見ます。</p>
+      <ul><li>自分の判断や立場が入っているか</li><li>一般論を否定する場面があるか</li><li>なぜそう言えるのか理由まで話しているか</li></ul>
+      <div class="note">ここが弱いと、伸びる伸びない以前に、収益化を止められるリスクもあります。「独自の視点が無い」動画は、そもそも評価の土俵に上がれません。</div>
+    </div>
+    <div class="ax"><div class="hd"><span class="nm">③ 具体性</span><span class="pt">20点</span></div>
+      <p>ふわっとした話は誰の記憶にも残りません。数字と実例、ちゃんと入れてください。</p>
+      <ul><li>数字の密度（1000文字あたり3個以上が目安）</li><li>具体例があるか</li><li>「すごく」「かなり」で誤魔化していないか</li></ul>
+    </div>
+    <div class="ax"><div class="hd"><span class="nm">④ 離脱の防止</span><span class="pt">15点</span></div>
+      <p>冒頭で掴んでも、中だるみしたら意味がないです。最後まで引っ張れているか。</p>
+      <ul><li>何をいくつ話すか先に宣言しているか</li><li>話をつなぐ言葉があるか</li><li>最後まで見る理由を予告できているか</li></ul>
+    </div>
+    <div class="ax"><div class="hd"><span class="nm">⑤ 声で聞ける文か</span><span class="pt">10点</span></div>
+      <p>台本は読む文章じゃなくて、話す文章です。書き言葉のまま読み上げても、誰にも刺さりません。</p>
+      <ul><li>1行の長さ（平均32文字以内が目安）</li><li>話し言葉になっているか</li><li>硬い言い回しが混ざっていないか</li></ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="sec">スコアの目安</h2>
+    <div class="range">
+      <div><b style="color:#2E9E5B">85点以上</b><span>このまま出していい水準です</span></div>
+      <div><b style="color:#F2A900">70〜84点</b><span>指摘箇所を直せば十分戦えます</span></div>
+      <div><b style="color:#E8433A">50〜69点</b><span>このままだと最後まで見てもらえません</span></div>
+      <div><b style="color:#E8433A">49点以下</b><span>台本の土台から作り直しです</span></div>
+    </div>
+    <div class="note">まずは85点を基準にしてください。そこに届くまで、診断→修正を繰り返すのが一番の近道です。</div>
+  </div>
+</div>
+
+<footer>SAKUMASCHOOL 台本自動クン</footer>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const src=$("src");
+
+function show(p){
+  const main=p==="main";
+  $("page-main").style.display=main?"block":"none";
+  $("page-help").style.display=main?"none":"block";
+  $("tb-main").classList.toggle("on",main);
+  $("tb-help").classList.toggle("on",!main);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+$("tb-main").onclick=()=>show("main");
+$("tb-help").onclick=()=>show("help");
+
+src.addEventListener("input",()=>{ $("cnt").textContent=src.value.replace(/\s/g,"").length+"文字"; });
+$("clr").onclick=()=>{ src.value=""; $("cnt").textContent="0文字"; $("result").style.display="none"; window.scrollTo({top:0,behavior:"smooth"}); };
+
+function analyze(raw){
+  const text=raw.replace(/\r/g,"");
+  const lines=text.split("\n").map(l=>l.trim()).filter(l=>l!=="");
+  const body=text.replace(/\s/g,"");
+  const chars=body.length;
+  const head=lines.slice(0,6).join("\n");
+  const headTxt=head.replace(/\s/g,"");
+
+  const num=/[0-90-9]+\s*(円|万|億|人|回|倍|%|%|日|週間|ヶ月|カ月|年|分|時間|kg|キロ|歳|割)/g;
+  const numAll=text.match(num)||[];
+  const numHead=head.match(num)||[];
+
+  const issues=[],goods=[];
+  const S={hook:0,retain:0,concrete:0,judge:0,voice:0};
+
+  let hook=0;
+  if(numHead.length>=2) hook+=12;
+  else if(numHead.length===1) hook+=7;
+  else issues.push({ax:"冒頭の引き",lv:"bad",t:"冒頭に具体的な数字がありません",
+    p:"最初の数秒で見る理由を作れないと、そこで終わりです。ふわっとした言葉じゃなく、数字を置いてください。",
+    f:"<b>直し方</b>：期間と結果を数字にする。「短期間で成果が出る方法」→「3週間で○○が変わった方法」"});
+
+  const hookWords=["結論から","実は","知らないと","損して","9割","ほとんどの人","衝撃","本当の理由","絶対に","たった","誰も教えて","やってはいけない"];
+  const hw=hookWords.filter(w=>headTxt.includes(w));
+  if(hw.length>=1) hook+=8;
+  else issues.push({ax:"冒頭の引き",lv:"warn",t:"冒頭に興味を引く仕掛けがありません",
+    p:"「実は」「知らないと損する」「9割の人が」のような、続きが気になる一言が冒頭にありません。",
+    f:"<b>直し方</b>：常識の否定、または損失の提示を冒頭に置く。「○○は間違いです」「知らないと○○を失います」"});
+
+  const firstLen=lines[0]?lines[0].replace(/\s/g,"").length:0;
+  if(firstLen>0&&firstLen<=35) hook+=5;
+  else if(firstLen>60) issues.push({ax:"冒頭の引き",lv:"warn",t:"1行目が長すぎます（"+firstLen+"文字）",
+    p:"最初の1行が長いと、状況を把握する前に情報が流れていってしまいます。",
+    f:"<b>直し方</b>：1行目は35文字以内。長い場合は2行に分ける"});
+
+  const greetNG=/(いかがお過ごし|皆様におかれまして|本日はお忙しい|ご視聴いただき誠に)/;
+  if(!greetNG.test(headTxt)) hook+=5;
+  else issues.push({ax:"冒頭の引き",lv:"bad",t:"冒頭に長い挨拶が入っています",
+    p:"最初の数秒で本題に入らないと、そのまま離脱されます。挨拶は名乗るだけで十分です。",
+    f:"<b>直し方</b>：挨拶は1行。名乗ったらすぐ本題へ"});
+  S.hook=Math.min(30,hook);
+  if(S.hook>=22) goods.push({ax:"冒頭の引き",t:"冒頭で見る理由を作れています",p:"数字や仕掛けが冒頭に配置されており、離脱を防ぐ設計になっています。"});
+
+  let ret=0;
+  const mapWords=["ステップ","つのポイント","つに分けて","順番に","まず","次に","最後に","第一","①","1つ目"];
+  const mw=mapWords.filter(w=>text.includes(w));
+  if(mw.length>=3) ret+=6;
+  else if(mw.length>=1) ret+=3;
+  else issues.push({ax:"離脱の防止",lv:"bad",t:"話の地図が示されていません",
+    p:"「何をいくつ話すか」を先に伝えないと、聞き手は終わりが見えず離脱します。",
+    f:"<b>直し方</b>：本題に入る前に「今日は3つのポイントで話します」と宣言し、各パートで「1つ目は」と区切る"});
+
+  const bridge=["ここまでで","つまり","だからこそ","逆に言うと","ということは","ここが重要","そして","ただ"];
+  const bw=bridge.filter(w=>text.includes(w));
+  if(bw.length>=4) ret+=5;
+  else if(bw.length>=2) ret+=2;
+  else issues.push({ax:"離脱の防止",lv:"warn",t:"話をつなぐ言葉が少ないです",
+    p:"「つまり」「だからこそ」のような接続がないと、話が細切れに聞こえて集中が切れます。",
+    f:"<b>直し方</b>：段落の変わり目に「つまり」「ここが重要なんですが」を入れる"});
+
+  const teaser=["後半で","最後に話します","詳しくは","これは後で","次の動画で","最後まで"];
+  if(teaser.some(w=>text.includes(w))) ret+=4;
+  else issues.push({ax:"離脱の防止",lv:"warn",t:"最後まで見る理由がありません",
+    p:"途中で「後半で話します」のような予告がないと、満足した時点で離脱されます。",
+    f:"<b>直し方</b>：前半で「一番大事な話は最後にします」と予告する"});
+  S.retain=Math.min(15,ret);
+  if(S.retain>=11) goods.push({ax:"離脱の防止",t:"最後まで聞かせる設計になっています",p:"話の地図と接続詞が配置されており、途中離脱を防げています。"});
+
+  let con=0;
+  const per1000=chars>0?numAll.length/(chars/1000):0;
+  if(per1000>=6) con+=9;
+  else if(per1000>=3) con+=6;
+  else if(per1000>=1) con+=3;
+  if(per1000<3) issues.push({ax:"具体性",lv:"bad",t:"数字が少なすぎます（1000文字あたり"+per1000.toFixed(1)+"個）",
+    p:"数字がない話は抽象論として流されます。1000文字あたり3個以上を目安にしてください。",
+    f:"<b>直し方</b>：「たくさん」→「17個」、「かなり短期間」→「2週間」のように置き換える"});
+
+  const exWords=["たとえば","例えば","具体的には","実際に","こんなケース","私の場合","こういう人"];
+  const ew=exWords.filter(w=>text.includes(w));
+  if(ew.length>=3) con+=7;
+  else if(ew.length>=1) con+=4;
+  else issues.push({ax:"具体性",lv:"bad",t:"具体例がありません",
+    p:"説明だけでは、聞き手が自分の状況に置き換えられません。",
+    f:"<b>直し方</b>：主張のあとに必ず「たとえば」を入れて、実例を1つ添える"});
+
+  const vague=["すごく","とても","かなり","めちゃくちゃ","非常に","しっかり","ちゃんと","いろいろ","さまざま"];
+  const vg=vague.filter(w=>text.includes(w));
+  if(vg.length<=6) con+=4;
+  else issues.push({ax:"具体性",lv:"warn",t:"曖昧な表現が多いです（"+vg.length+"種類）",
+    p:"「すごく」「かなり」は情報量がゼロです。数字か具体的な状態に置き換えてください。",
+    f:"<b>直し方</b>：「すごく増えた」→「3倍になった」／「かなり早い」→「1日で終わる」"});
+  S.concrete=Math.min(20,con);
+  if(S.concrete>=15) goods.push({ax:"具体性",t:"数字と実例で裏付けられています",p:"抽象論にならず、聞き手が自分に当てはめられる状態になっています。"});
+
+  let jd=0;
+  const op=["と考えます","だと思います","僕は","私は","結論","おすすめ","選ぶなら","一番大事なのは","優先すべき"].filter(w=>text.includes(w));
+  if(op.length>=3) jd+=10;
+  else if(op.length>=1) jd+=5;
+  else issues.push({ax:"独自の判断",lv:"bad",t:"あなたの判断が入っていません",
+    p:"情報を並べただけの動画に価値はないです。「独自の視点が無い」と判定される対象でもあるので、伸びない以前に止められるリスクがあります。",
+    f:"<b>直し方</b>：「この中で一番大事なのは○○です」と優先順位をつける。「僕は△△を選びます」とはっきり立場を出す"});
+
+  const contra=["よく言われますが","と思われがちですが","実は違い","間違い","誤解","逆です","ではありません"];
+  const ct=contra.filter(w=>text.includes(w));
+  if(ct.length>=1) jd+=9;
+  else issues.push({ax:"独自の判断",lv:"warn",t:"一般論を否定する箇所がありません",
+    p:"どこかで読める内容をなぞるだけでは、あなたから聞く理由がなくなります。",
+    f:"<b>直し方</b>：「よく○○と言われますが、実は違います」を1箇所入れる"});
+
+  const exp=["なぜなら","理由は","というのも","からです"];
+  if(exp.some(w=>text.includes(w))) jd+=6;
+  else issues.push({ax:"独自の判断",lv:"warn",t:"理由の説明が不足しています",
+    p:"結論だけ並べても「解説が薄い」と判定されます。",
+    f:"<b>直し方</b>：主張のあとに「なぜなら」を続けて、根拠を1文加える"});
+  S.judge=Math.min(25,jd);
+  if(S.judge>=18) goods.push({ax:"独自の判断",t:"あなたの視点が入っています",p:"情報の羅列で終わっておらず、独自性の要件を満たす方向にあります。"});
+
+  let vo=0;
+  const lens=lines.map(l=>l.replace(/\s/g,"").length);
+  const avgLen=lens.length?lens.reduce((a,b)=>a+b,0)/lens.length:0;
+  const longLines=lens.filter(l=>l>50).length;
+  if(avgLen<=32) vo+=4;
+  else if(avgLen<=45) vo+=2;
+  if(avgLen>45) issues.push({ax:"声で聞ける文か",lv:"bad",t:"1行が長すぎます（平均"+Math.round(avgLen)+"文字）",
+    p:"台本は音として届きます。1行が長いと一文の切れ目が分からず、聞き手が内容を追えなくなります。",
+    f:"<b>直し方</b>：1行1文にする。40文字を超えたら、意味の切れ目で改行する"});
+  else if(longLines>=5) issues.push({ax:"声で聞ける文か",lv:"warn",t:"長すぎる行が"+longLines+"箇所あります",
+    p:"50文字を超える行は、聞いている途中で主語を見失います。",
+    f:"<b>直し方</b>：該当行を2つに分ける"});
+
+  const spoken=["ですよね","なんです","なんですけど","してください","ください","ますよね","んですが","でしょうか"];
+  const sp=spoken.filter(w=>text.includes(w));
+  if(sp.length>=3) vo+=3;
+  else if(sp.length>=1) vo+=1;
+  else issues.push({ax:"声で聞ける文か",lv:"bad",t:"書き言葉になっています",
+    p:"読む文章と、話す文章は別物です。話し言葉にしないと、聞き手との距離が縮まりません。",
+    f:"<b>直し方</b>：「〜である」→「〜なんです」／「〜と考えられる」→「〜だと思うんですよね」"});
+
+  const written=["である","であり","及び","並びに","当該","上記","なお、","かつ"];
+  const wr=written.filter(w=>text.includes(w));
+  if(wr.length===0) vo+=3;
+  else issues.push({ax:"声で聞ける文か",lv:"warn",t:"硬い書き言葉が混ざっています",
+    p:"「である」「なお」などの表現は、声にすると不自然に聞こえます。",
+    f:"<b>直し方</b>：該当箇所を話し言葉に直す"});
+  S.voice=Math.min(10,vo);
+  if(S.voice>=7) goods.push({ax:"声で聞ける文か",t:"音として自然に届く文章です",p:"1行の長さと話し言葉が適切で、読み上げに適した台本になっています。"});
+
+  const total=S.hook+S.retain+S.concrete+S.judge+S.voice;
+  return {total,S,issues,goods,stats:{chars,lines:lines.length,avgLen:Math.round(avgLen),nums:numAll.length,sec:Math.round(chars/500*60)}};
+}
+
+function fmtSec(s){const m=Math.floor(s/60),x=s%60;return m>0?(m+"分"+x+"秒"):(x+"秒");}
+
+const AX=[
+ {k:"hook",n:"① 冒頭の引き",max:30,c:"#E8433A"},
+ {k:"judge",n:"② 独自の判断",max:25,c:"#6B4F8C"},
+ {k:"concrete",n:"③ 具体性",max:20,c:"#1C1C1C"},
+ {k:"retain",n:"④ 離脱の防止",max:15,c:"#F2A900"},
+ {k:"voice",n:"⑤ 声で聞ける文か",max:10,c:"#2E9E5B"},
+];
+
+const COMMENTS = {
+  great: "これは出していい台本です。次も同じ精度でいきましょう。",
+  ok: "あと一歩。指摘箇所を潰せば十分戦えます。",
+  bad: "正直、今のままだと厳しいです。まずは①と②から直してください。",
+  worst: "土台から作り直しです。数字を入れて、あなたの意見を一言足すところから始めましょう。"
+};
+
+$("run").onclick=()=>{
+  const raw=src.value.trim();
+  if(raw.replace(/\s/g,"").length<100){ alert("台本を100文字以上、貼り付けてください。"); return; }
+  const r=analyze(raw);
+
+  $("sc").textContent=r.total;
+  const rk=r.total>=85?["合格ライン超え","このまま出して問題ありません",COMMENTS.great]
+        :r.total>=70?["あと少し","指摘箇所を直せば十分戦えます",COMMENTS.ok]
+        :r.total>=50?["要改善","このままだと最後まで見られません",COMMENTS.bad]
+        :["大幅な作り直しが必要","伸びない原因が構造にあります",COMMENTS.worst];
+  $("rk").textContent=rk[0];
+  $("rksub").textContent=rk[1];
+  $("charComment").textContent=rk[2];
+  $("sc").style.color=r.total>=85?"#2E9E5B":r.total>=70?"#F2A900":"#E8433A";
+
+  $("bars").innerHTML=AX.map(a=>{
+    const v=r.S[a.k],pc=Math.round(v/a.max*100);
+    return '<div class="bar-row"><div class="bar-label">'+a.n+'</div>'+
+      '<div class="bar-track"><div class="bar-fill" style="width:'+pc+'%;background:'+a.c+'"></div></div>'+
+      '<div class="bar-val">'+v+'/'+a.max+'</div></div>';
+  }).join("");
+
+  const order={bad:0,warn:1};
+  const iss=r.issues.sort((a,b)=>order[a.lv]-order[b.lv]);
+  $("issues").innerHTML=iss.length?iss.map(i=>
+    '<div class="item '+i.lv+'"><span class="tag '+i.lv+'">'+(i.lv==="bad"?"要修正":"改善推奨")+'　'+i.ax+'</span>'+
+    '<h4>'+i.t+'</h4><p>'+i.p+'</p><div class="fix">'+i.f+'</div></div>').join("")
+    :'<div class="item good"><h4>指摘事項はありません</h4><p>5つの軸すべてで基準を満たしています。</p></div>';
+
+  $("goods").innerHTML=r.goods.length?r.goods.map(g=>
+    '<div class="item good"><span class="tag good">'+g.ax+'</span><h4>'+g.t+'</h4><p>'+g.p+'</p></div>').join("")
+    :'<div class="item warn"><h4>まだ強みが出ていません</h4><p>改善点から順に直していってください。</p></div>';
+
+  const st=r.stats;
+  $("stats").innerHTML=[
+    ["文字数",st.chars.toLocaleString()],
+    ["行数",st.lines],
+    ["1行の平均",st.avgLen+"文字"],
+    ["数字の数",st.nums],
+    ["想定の尺",fmtSec(st.sec)],
+  ].map(x=>'<div class="stat"><div class="k">'+x[0]+'</div><div class="v">'+x[1]+'</div></div>').join("");
+
+  $("result").style.display="block";
+  $("result").scrollIntoView({behavior:"smooth",block:"start"});
+};
+</script>
+</body>
+</html>
