@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAKUMA SCHOOL ログイン</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --desk:#2b2540;
+  --box-bg:#f8f6e4;
+  --box-border:#2c4aa0;
+  --box-border-inner:#7f9de8;
+  --ink:#2a2a2a;
+  --ink-soft:#5b5b6b;
+  --red:#e6393f;
+  --yellow:#ffce00;
+  --green:#4caf6d;
+  --page-ink:#eee9f7;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(ellipse 90% 60% at 50% -10%, #453a68 0%, transparent 60%), var(--desk);
+  color:var(--page-ink); font-family:'Zen Maru Gothic', sans-serif; padding:20px;
+}
+.pixel{font-family:'DotGothic16', monospace; letter-spacing:0.5px;}
+.card{
+  width:100%; max-width:360px; background:var(--box-bg); color:var(--ink);
+  border:3px solid var(--box-border); box-shadow:0 0 0 2px var(--box-border-inner) inset;
+  border-radius:10px; padding:26px 22px;
+}
+.card h1{font-size:16px; text-align:center; margin:0 0 4px;}
+.card .sub{font-size:11px; color:var(--ink-soft); text-align:center; margin-bottom:20px;}
+.oauth-btn{
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  width:100%; padding:11px; margin-bottom:10px; border-radius:6px; border:2px solid var(--ink);
+  background:#fff; color:var(--ink); font-size:13px; font-weight:700; cursor:pointer;
+}
+.oauth-btn.line{background:#06C755; color:#fff; border-color:#049645;}
+.oauth-btn.google{background:#fff;}
+.oauth-btn.apple{background:#000; color:#fff; border-color:#000;}
+.divider{display:flex; align-items:center; gap:8px; margin:16px 0; color:var(--ink-soft); font-size:10.5px;}
+.divider::before,.divider::after{content:''; flex:1; height:1px; background:#c9c3a8;}
+input{
+  width:100%; padding:10px 12px; margin-bottom:8px; border-radius:6px; border:2px solid var(--box-border);
+  font-size:13px; background:#fff; color:var(--ink);
+}
+.email-btn{
+  width:100%; padding:11px; border-radius:6px; border:none; background:var(--box-border);
+  color:#fff; font-size:13px; font-weight:700; cursor:pointer; margin-bottom:6px;
+}
+.toggle-mode{font-size:11px; text-align:center; color:var(--box-border); cursor:pointer; text-decoration:underline;}
+.msg{font-size:11px; text-align:center; margin-top:10px; min-height:14px;}
+.msg.err{color:var(--red);}
+.msg.ok{color:var(--green);}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1 class="pixel">SAKUMA SCHOOL</h1>
+  <div class="sub">好きな方法でログインしてください</div>
+
+  <button class="oauth-btn line" onclick="oauthLogin('custom:line')">LINEでログイン</button>
+  <button class="oauth-btn google" onclick="oauthLogin('google')">Googleでログイン</button>
+  <button class="oauth-btn apple" onclick="oauthLogin('apple')">Apple IDでログイン</button>
+
+  <div class="divider pixel">or</div>
+
+  <input type="email" id="email" placeholder="メールアドレス">
+  <input type="password" id="password" placeholder="パスワード">
+  <button class="email-btn" onclick="emailLogin()">ログイン</button>
+  <div class="toggle-mode" id="toggleMode" onclick="toggleSignup()">初めての方はこちら（新規登録）</div>
+
+  <div class="msg" id="msg"></div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://gwvapbmijorqzavcssvd.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3dmFwYm1pam9ycXphdmNzc3ZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1MDUzNzQsImV4cCI6MjEwMjA4MTM3NH0.naWci7tc8OmEQ9WYCVZzFUB73tzWmZ-t8Oy4M2_hbzs';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let signupMode = false;
+
+function setMsg(text, kind){
+  const el = document.getElementById('msg');
+  el.textContent = text;
+  el.className = 'msg ' + (kind||'');
+}
+
+function toggleSignup(){
+  signupMode = !signupMode;
+  document.getElementById('toggleMode').textContent = signupMode
+    ? 'すでに登録済みの方はこちら（ログイン）'
+    : '初めての方はこちら（新規登録）';
+  document.querySelector('.email-btn').textContent = signupMode ? '新規登録する' : 'ログイン';
+}
+
+async function oauthLogin(provider){
+  setMsg('');
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: provider,
+    options: { redirectTo: location.origin + location.pathname.replace('login.html','index.html') }
+  });
+  if(error){ setMsg(error.message, 'err'); }
+}
+
+async function emailLogin(){
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  if(!email || !password){ setMsg('メールとパスワードを入力してください', 'err'); return; }
+
+  if(signupMode){
+    const { error } = await sb.auth.signUp({ email, password });
+    if(error){ setMsg(error.message, 'err'); return; }
+    setMsg('登録できました。確認メールが届いていれば認証後にログインしてください。', 'ok');
+  } else {
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if(error){ setMsg(error.message, 'err'); return; }
+    location.href = 'index.html';
+  }
+}
+
+// すでにログイン済みならそのままindexへ
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if(session){ location.href = 'index.html'; }
+})();
+</script>
+</body>
+</html>

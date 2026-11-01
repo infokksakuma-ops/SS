@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAKUMA SCHOOL 管理画面</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --desk:#2b2540;
+  --box-bg:#f8f6e4;
+  --box-border:#2c4aa0;
+  --box-border-inner:#7f9de8;
+  --ink:#2a2a2a;
+  --ink-soft:#5b5b6b;
+  --green:#4caf6d;
+  --yellow:#ffce00;
+  --page-ink:#eee9f7;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; background:radial-gradient(ellipse 90% 60% at 50% -10%, #453a68 0%, transparent 60%), var(--desk);
+  color:var(--page-ink); font-family:'Zen Maru Gothic', sans-serif; padding-bottom:60px;
+}
+.pixel{font-family:'DotGothic16', monospace; letter-spacing:0.5px;}
+.topbar{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:12px 16px; border-bottom:3px solid var(--box-border);
+  background:rgba(23,20,31,0.92);
+}
+.back-link{
+  font-size:11.5px; color:var(--page-ink); text-decoration:none;
+  border:2px solid var(--box-border-inner); padding:6px 12px; border-radius:5px; background:#0e0c16;
+}
+.wrap{max-width:900px; margin:24px auto; padding:0 16px;}
+h1{font-size:16px;}
+table{
+  width:100%; border-collapse:collapse; background:var(--box-bg); color:var(--ink);
+  border:3px solid var(--box-border); border-radius:8px; overflow:hidden; font-size:12.5px;
+}
+th,td{padding:10px 12px; text-align:left; border-bottom:1px solid #d8d2b8;}
+th{background:var(--box-border); color:#fff; font-size:11px;}
+tr:last-child td{border-bottom:none;}
+.bar-track{width:120px; height:8px; background:#e4dfc4; border-radius:5px; overflow:hidden; display:inline-block; vertical-align:middle; margin-right:6px;}
+.bar-fill{height:100%; background:linear-gradient(90deg,var(--green),#2f8a51);}
+.empty, .denied{color:var(--ink-soft); font-size:12px; text-align:center; padding:40px 0;}
+.plan-btn{
+  font-size:11px; padding:6px 10px; border-radius:5px; border:2px solid var(--box-border); cursor:pointer;
+  background:#fff; color:var(--ink);
+}
+.plan-btn.full{background:var(--green); color:#fff; border-color:#2f7d43;}
+.plan-btn.trial{background:#e4dfc4;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="pixel">SAKUMA SCHOOL｜管理画面</div>
+  <a class="back-link pixel" href="index.html">← クエストログに戻る</a>
+</div>
+
+<div class="wrap">
+  <h1 class="pixel">生徒の視聴進捗</h1>
+  <div id="content">読み込み中...</div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://gwvapbmijorqzavcssvd.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3dmFwYm1pam9ycXphdmNzc3ZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1MDUzNzQsImV4cCI6MjEwMjA4MTM3NH0.naWci7tc8OmEQ9WYCVZzFUB73tzWmZ-t8Oy4M2_hbzs';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const TOTAL_QUESTS = 35; // Chapter0〜5の合計本数(coming soon含む)
+
+async function requireAuth(){
+  const { data: { session } } = await sb.auth.getSession();
+  if(!session){ location.href = 'login.html'; return null; }
+  return session.user;
+}
+
+async function boot(){
+  const user = await requireAuth();
+  if(!user) return;
+
+  const content = document.getElementById('content');
+
+  const { data: adminRow } = await sb.from('admins').select('email').eq('email', user.email).maybeSingle();
+  if(!adminRow){
+    content.innerHTML = '<div class="denied">この画面は管理者のみ閲覧できます（このアカウントは管理者として登録されていません）。</div>';
+    return;
+  }
+
+  const { data: profiles, error: pErr } = await sb.rpc('admin_list_students');
+  const { data: progressRows } = await sb.from('progress').select('user_id, data, updated_at');
+
+  if(pErr || !profiles){
+    content.innerHTML = '<div class="empty">読み込みエラーが発生しました。時間をおいて再度お試しください。</div>';
+    return;
+  }
+
+  const progressMap = {};
+  (progressRows||[]).forEach(r => { progressMap[r.user_id] = r.data || {}; });
+
+  const fmt = (d) => d ? new Date(d).toLocaleString('ja-JP') : '(なし)';
+
+  const rows = profiles.map(p=>{
+    const data = progressMap[p.id] || {};
+    const done = Object.values(data).filter(Boolean).length;
+    const pct = Math.round(done/TOTAL_QUESTS*100);
+    return {id:p.id, email:p.email, created_at:p.created_at, last_sign_in_at:p.last_sign_in_at, full_access:p.full_access, done, pct};
+  });
+
+  content.innerHTML = `
+    <table>
+      <tr><th>メール</th><th>初回ログイン</th><th>最終ログイン</th><th>進捗</th><th>プラン</th></tr>
+      ${rows.map(r=>`
+        <tr>
+          <td>${r.email||'(不明)'}</td>
+          <td>${fmt(r.created_at)}</td>
+          <td>${fmt(r.last_sign_in_at)}</td>
+          <td>
+            <span class="bar-track"><span class="bar-fill" style="width:${r.pct}%"></span></span>
+            ${r.done}/${TOTAL_QUESTS}（${r.pct}%）
+          </td>
+          <td>
+            <button class="plan-btn ${r.full_access?'full':'trial'}" onclick="toggleAccess('${r.id}', ${!r.full_access})">
+              ${r.full_access ? '✅ 完全版' : '🔒 お試し版'}
+            </button>
+          </td>
+        </tr>`).join('')}
+    </table>
+  `;
+}
+
+async function toggleAccess(userId, newValue){
+  await sb.from('profiles').update({ full_access: newValue }).eq('id', userId);
+  boot();
+}
+boot();
+</script>
+</body>
+</html>

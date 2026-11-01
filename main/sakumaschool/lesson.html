@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAKUMA SCHOOL 視聴ページ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --desk:#2b2540;
+  --bezel:#17141f;
+  --box-bg:#f8f6e4;
+  --box-border:#2c4aa0;
+  --box-border-inner:#7f9de8;
+  --ink:#2a2a2a;
+  --ink-soft:#5b5b6b;
+  --red:#e6393f;
+  --yellow:#ffce00;
+  --green:#4caf6d;
+  --blue:#3858a8;
+  --page-ink:#eee9f7;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:radial-gradient(ellipse 90% 60% at 50% -10%, #453a68 0%, transparent 60%), var(--desk);
+  color:var(--page-ink);
+  font-family:'Zen Maru Gothic', sans-serif;
+  line-height:1.7;
+  padding-bottom:60px;
+  min-height:100vh;
+}
+.pixel{font-family:'DotGothic16', monospace; letter-spacing:0.5px;}
+
+.topbar{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:12px 16px; border-bottom:3px solid var(--box-border);
+  background:rgba(23,20,31,0.92);
+}
+.topbar .name{font-size:12px; letter-spacing:1px;}
+.back-link{
+  font-size:11.5px; color:var(--page-ink); text-decoration:none;
+  border:2px solid var(--box-border-inner); padding:6px 12px; border-radius:5px; background:#0e0c16;
+}
+
+.wrap{max-width:720px; margin:26px auto 0; padding:0 16px;}
+
+.title-card{
+  background:var(--box-bg); color:var(--ink); border:3px solid var(--box-border);
+  box-shadow:0 0 0 2px var(--box-border-inner) inset; border-radius:6px;
+  padding:12px 16px; margin-bottom:16px;
+}
+.title-card .id{color:var(--blue); font-size:11px;}
+.title-card h1{font-size:17px; margin:4px 0 0;}
+
+.player-frame{
+  background:var(--bezel); border-radius:14px; padding:10px;
+  box-shadow:0 20px 50px -15px rgba(0,0,0,.7);
+  margin-bottom:16px;
+}
+.player-inner{
+  position:relative; width:100%; padding-top:56.25%;
+  border-radius:6px; overflow:hidden; background:#000;
+}
+.player-inner iframe{
+  position:absolute; inset:0; width:100%; height:100%; border:0;
+}
+
+.progress-bar{
+  height:10px; background:#0e0c16; border:2px solid var(--box-border); border-radius:6px; overflow:hidden;
+  margin-bottom:8px;
+}
+.progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--green),#2f8a51); transition:width .3s linear;}
+.progress-label{font-size:10.5px; color:#b3aed0; margin-bottom:20px;}
+
+.status-card{
+  background:var(--box-bg); color:var(--ink); border:3px solid var(--green);
+  box-shadow:0 0 0 2px #9ee0b3 inset; border-radius:6px;
+  padding:16px; text-align:center; display:none;
+}
+.status-card.show{display:block;}
+.status-card .big{font-size:15px; font-weight:700; margin-bottom:6px;}
+.status-card a{
+  display:inline-block; margin-top:8px; font-size:12.5px; padding:9px 18px;
+  background:var(--blue); color:#fff; text-decoration:none; border-radius:6px; border:2px solid #1c3468;
+}
+
+.locked-card{
+  background:var(--box-bg); color:var(--ink); border:3px solid var(--box-border);
+  box-shadow:0 0 0 2px var(--box-border-inner) inset; border-radius:6px;
+  padding:26px 16px; text-align:center;
+}
+.locked-card .big{font-size:15px; font-weight:700; margin-bottom:6px;}
+.locked-card a{
+  display:inline-block; margin-top:12px; font-size:12.5px; padding:9px 18px;
+  background:var(--blue); color:#fff; text-decoration:none; border-radius:6px; border:2px solid #1c3468;
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="name pixel">SAKUMA SCHOOL</div>
+  <a class="back-link pixel" href="index.html">← クエストログに戻る</a>
+</div>
+
+<div class="wrap" id="content"></div>
+
+<script>
+// id -> {title, platform:'youtube'|'vimeo', videoId, available}
+const VIDEOS = {
+  '0':    {title:'講座の学び方',             platform:'vimeo',   videoId:'932830137', available:true},
+  '1-1':  {title:'【認知・夢】or【お金】',     platform:'youtube', videoId:'0EbGKCTcVD0', available:true},
+  '1-2':  {title:'SNSビジネス【お金】を産む',  platform:'youtube', videoId:'lUJhFbtAH2M', available:true},
+  '1-3':  {title:'私は【認知・夢】を選択した', platform:'youtube', videoId:'PrbiPLblugY', available:true},
+  '2-1':  {title:'コンテンツジャンル選び',     platform:'youtube', videoId:'8jYPNAqa1Lo', available:true},
+  '2-2':  {title:'コンテンツ競合リサーチ',     platform:'youtube', videoId:'p9YEFwurbXQ', available:true},
+  '2-3':  {title:'コンセプトの決め方',         platform:'youtube', videoId:'VnxXhCSuLr8', available:true},
+  '2-4':  {title:'有料コンテンツのチャプター', platform:'youtube', videoId:'AdMabRk73-k', available:true},
+  '2-5':  {title:'コンテンツの作り方',         platform:'youtube', videoId:'LMK6QjdKmUM', available:true},
+  '2-6':  {title:'教育サイトの作り方',         platform:'youtube', videoId:'NZXw5E1f398', available:true},
+  '2-7':  {title:'サポート内容',               platform:'youtube', videoId:'LNJM9VcCZBY', available:true},
+  '2-8':  {title:'価格と決済',                 platform:'youtube', videoId:'w3iKHKlKCvY', available:true},
+  '2-9':  {title:'LP作成手順',                 platform:null,      videoId:null, available:false},
+  '2-10': {title:'公式LINEの作り方',           platform:'youtube', videoId:'O098Xpixozc', available:true},
+  '2-11': {title:'商品購買の導線設計',         platform:'youtube', videoId:'Kti5ihUgyJc', available:true},
+  '2-12': {title:'無料プレゼント',             platform:'youtube', videoId:'OFqLFGxgeqg', available:true},
+  '3-1':  {title:'相談会の手順',               platform:'youtube', videoId:'6nBbgMmWzhw', available:true},
+  '3-2':  {title:'商品購買の導線設計',         platform:'youtube', videoId:'5uST6e-OftQ', available:true},
+  '3-3':  {title:'商品を買わない理由',         platform:'youtube', videoId:'JSPaOxKxJ7k', available:true},
+  '4-1':  {title:'アルゴリズムの考え方',       platform:'youtube', videoId:'9JAEwe3Yzk4', available:true},
+  '4-2':  {title:'競合リサーチ',               platform:'youtube', videoId:'VMfa4ZCLpSU', available:true},
+  '4-3':  {title:'アカウント設計',             platform:'youtube', videoId:'R7tO_mACGIY', available:true},
+  '4-4':  {title:'アカウントの機械学習',       platform:'youtube', videoId:'b1n63cNcKEM', available:true},
+  '4-5':  {title:'【認知・夢】or【お金】',     platform:'youtube', videoId:'x-_TNTlRjNY', available:true},
+  '4-6':  {title:'優遇される映像',             platform:'youtube', videoId:'RXOS7LfD9aQ', available:true},
+  '4-7':  {title:'優遇される台本',             platform:'youtube', videoId:'ayzdmSCxd6I', available:true},
+  '4-8':  {title:'コメント戦略',               platform:'youtube', videoId:'FxXN9Eus-xw', available:true},
+  '4-9':  {title:'誹謗中傷は必ず来る',         platform:null,      videoId:null, available:false},
+  '4-10': {title:'海外戦略',                   platform:null,      videoId:null, available:false},
+  '4-11': {title:'企業案件は事務所に入る',     platform:null,      videoId:null, available:false},
+  '4-12': {title:'TikTok投稿手順_撮影',        platform:'youtube', videoId:'eDJdSilrNYc', available:true},
+  '4-13': {title:'TikTok投稿手順_編集〜アップ',platform:'youtube', videoId:'lbw5926Sknk', available:true},
+  '4-14': {title:'顔出しする？しない？',       platform:'youtube', videoId:'VydVJq0A25M', available:true},
+  '5-1':  {title:'【認知・夢】のための動画',   platform:'youtube', videoId:'a6RWIhhN3-4', available:true},
+  '5-2':  {title:'【お金】のための動画',       platform:'youtube', videoId:'YNF5ansbVMs', available:true},
+};
+
+const SUPABASE_URL = 'https://gwvapbmijorqzavcssvd.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3dmFwYm1pam9ycXphdmNzc3ZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1MDUzNzQsImV4cCI6MjEwMjA4MTM3NH0.naWci7tc8OmEQ9WYCVZzFUB73tzWmZ-t8Oy4M2_hbzs';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const params = new URLSearchParams(location.search);
+const id = params.get('id');
+const video = VIDEOS[id];
+const content = document.getElementById('content');
+
+let currentUser = null;
+let progressState = {};
+let fullAccess = false;
+const TRIAL_LIMIT_CHAPTER = 2;
+
+function getSessionOnce(){
+  return new Promise((resolve) => {
+    let done = false;
+    const { data: listener } = sb.auth.onAuthStateChange((_event, session) => {
+      if(done) return;
+      done = true;
+      listener.subscription.unsubscribe();
+      resolve(session);
+    });
+    // 保険: 数秒待ってもイベントが来なければ直接確認する
+    setTimeout(async () => {
+      if(done) return;
+      const { data: { session } } = await sb.auth.getSession();
+      if(done) return;
+      done = true;
+      listener.subscription.unsubscribe();
+      resolve(session);
+    }, 2000);
+  });
+}
+
+async function requireAuth(){
+  const session = await getSessionOnce();
+  if(!session){ location.href = 'login.html'; return null; }
+  return session.user;
+}
+
+async function loadAccess(){
+  try{
+    const { data } = await sb.from('profiles').select('full_access').eq('id', currentUser.id).maybeSingle();
+    fullAccess = !!(data && data.full_access);
+  }catch(e){ fullAccess = false; }
+}
+
+async function loadProgressState(){
+  try{
+    const { data } = await sb.from('progress').select('data').eq('user_id', currentUser.id).maybeSingle();
+    progressState = (data && data.data) ? data.data : {};
+  }catch(e){ progressState = {}; }
+}
+
+async function markComplete(){
+  if(!progressState[id]){
+    progressState[id] = true;
+    try{
+      await sb.from('progress').upsert({ user_id: currentUser.id, data: progressState, updated_at: new Date().toISOString() });
+    }catch(e){ /* will retry on next update */ }
+  }
+  const status = document.getElementById('statusCard');
+  if(status) status.classList.add('show');
+}
+
+function alreadyDone(){
+  return !!progressState[id];
+}
+
+function renderLocked(title, reason){
+  const isAccessLock = reason === 'access';
+  content.innerHTML = `
+    <div class="locked-card">
+      <div class="big pixel">${isAccessLock ? '🔒 完全版限定' : '🔒 近日公開'}</div>
+      <p>${isAccessLock
+        ? 'この動画は完全版でのみ視聴できます。運営に解放を依頼してください。'
+        : `「${title || ''}」の動画は準備中です。公開までもう少しお待ちください。`}</p>
+      <a class="pixel" href="index.html">クエストログに戻る</a>
+    </div>`;
+}
+
+function renderNotFound(){
+  content.innerHTML = `
+    <div class="locked-card">
+      <div class="big pixel">クエストが見つかりません</div>
+      <p>URLのidが正しいか確認してください。</p>
+      <a class="pixel" href="index.html">クエストログに戻る</a>
+    </div>`;
+}
+
+function renderPlayer(){
+  const doneAlready = alreadyDone();
+  content.innerHTML = `
+    <div class="title-card">
+      <div class="id pixel">${id}</div>
+      <h1>${video.title}</h1>
+    </div>
+    <div class="player-frame">
+      <div class="player-inner" id="playerMount"></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label pixel" id="progressLabel">${doneAlready ? '視聴済み（もう一度見てもOK）' : '90%まで見るとクエストクリアになります'}</div>
+    <div class="status-card ${doneAlready?'show':''}" id="statusCard">
+      <div class="big pixel">✅ クエストクリア！</div>
+      <p>視聴完了として記録しました。</p>
+      <a href="index.html">クエストログに戻る</a>
+    </div>
+  `;
+
+  if(video.platform === 'youtube'){
+    mountYouTube();
+  } else if(video.platform === 'vimeo'){
+    mountVimeo();
+  }
+}
+
+function mountYouTube(){
+  const mount = document.getElementById('playerMount');
+  const iframe = document.createElement('iframe');
+  iframe.id = 'yt-player';
+  iframe.src = `https://www.youtube.com/embed/${video.videoId}?enablejsapi=1&playsinline=1`;
+  iframe.allow = 'autoplay; encrypted-media; picture-in-picture';
+  iframe.allowFullscreen = true;
+  mount.appendChild(iframe);
+
+  const tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.body.appendChild(tag);
+
+  window.onYouTubeIframeAPIReady = function(){
+    let marked = false;
+    const player = new YT.Player('yt-player', {
+      events: {
+        onStateChange: function(e){
+          if(e.data === YT.PlayerState.PLAYING){
+            const interval = setInterval(()=>{
+              if(!player.getDuration || player.getDuration() === 0){ return; }
+              const pct = player.getCurrentTime() / player.getDuration();
+              document.getElementById('progressFill').style.width = Math.min(100, pct*100) + '%';
+              if(pct >= 0.9 && !marked){
+                marked = true;
+                markComplete();
+              }
+              if(player.getPlayerState() !== YT.PlayerState.PLAYING){
+                clearInterval(interval);
+              }
+            }, 1000);
+          }
+        }
+      }
+    });
+  };
+}
+
+function mountVimeo(){
+  const mount = document.getElementById('playerMount');
+  const iframe = document.createElement('iframe');
+  iframe.id = 'vimeo-player';
+  iframe.src = `https://player.vimeo.com/video/${video.videoId}`;
+  iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+  iframe.allowFullscreen = true;
+  mount.appendChild(iframe);
+
+  const tag = document.createElement('script');
+  tag.src = 'https://player.vimeo.com/api/player.js';
+  tag.onload = function(){
+    const player = new Vimeo.Player(iframe);
+    let marked = false;
+    player.on('timeupdate', function(data){
+      const pct = data.percent;
+      document.getElementById('progressFill').style.width = Math.min(100, pct*100) + '%';
+      if(pct >= 0.9 && !marked){
+        marked = true;
+        markComplete();
+      }
+    });
+  };
+  document.body.appendChild(tag);
+}
+
+async function boot(){
+  currentUser = await requireAuth();
+  if(!currentUser) return;
+  await loadAccess();
+  await loadProgressState();
+  const chNum = parseInt((id||'').split('-')[0], 10);
+  if(!video){
+    renderNotFound();
+  } else if(!fullAccess && chNum > TRIAL_LIMIT_CHAPTER){
+    renderLocked(video.title, 'access');
+  } else if(video.available === false){
+    renderLocked(video.title);
+  } else {
+    renderPlayer();
+  }
+}
+boot();
+</script>
+</body>
+</html>
